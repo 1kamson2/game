@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bymysn8vt6etc"]
+
+[ext_resource type="PackedScene" uid="uid://1dvs8ke4hpm6" path="res://World/Biome.tscn" id="1_ud4i1"]
+[ext_resource type="Script" uid="uid://bgfbudfpokl0d" path="res://World/Overworld/PlainsBiome.cs" id="3_7fqce"]
+
+[sub_resource type="TileSet" id="TileSet_ud4i1"]
+resource_local_to_scene = true
+resource_name = "PlainsBiome"
+tile_size = Vector2i(64, 64)
+physics_layer_0/collision_layer = 1
+physics_layer_0/collision_mask = 3
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_w86ok"]
+
+[node name="World" unique_id=1946901387 instance=ExtResource("1_ud4i1")]
+tile_set = SubResource("TileSet_ud4i1")
+script = ExtResource("3_7fqce")
+ChunkSize = 1
+NoiseFunction = SubResource("FastNoiseLite_w86ok")
