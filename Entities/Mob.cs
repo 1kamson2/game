@@ -16,25 +16,74 @@ public partial class Mob : Entity
 		{
 			currentVelocity.Y += 980 * (float)delta; 
 		}
-		if (IsOnFloor())
+
+		if (IsOnFloor() && GD.Randf() < 0.02f)
 		{
 			currentVelocity.Y = -JumpForce;
+		}
+		Velocity = currentVelocity;
+	}
+
+	public void UpdateVerticalPositionAggroed(double delta) 
+	{
+		Vector2 currentVelocity = Velocity;
+		if (!IsOnFloor())
+		{
+			currentVelocity.Y += 980 * (float)delta; 
 		}
 		Velocity = currentVelocity;
 	}
 	
 	public override void UpdateHorizontalPosition(double delta) 
 	{
+		if (GD.Randf() < 0.3f)
+		{
+			return;
+		}
+
+		Vector2 currentVelocity = Velocity;
+		if (GD.Randf() < 0.3f)
+		{
+			MovementDirection = new(GD.Randf() * 2, 0);
+		}
+		else
+		{
+			MovementDirection = new(GD.Randf() * -2, 0);
+		}
+		currentVelocity.X = MovementDirection.X * BaseSpeed;
+		Velocity = currentVelocity;
+	}
+
+	public void UpdateHorizontalPositionAggroed(double delta) 
+	{
 		// TODO:
 		// Make this Interface, because:
 		// 1. Is the player in the view, e.g.: Is the distance less than 100? If yes then track, otherwise don't.
 		// 2. There can be different types of movement, e.g.: Rushing, Stalking, etc.
-		
+
 		Vector2 currentVelocity = Velocity;
-		// Find the movement direction to get to the player
 		MovementDirection = GlobalPosition.DirectionTo(Target.GlobalPosition);
 		currentVelocity.X = MovementDirection.X * BaseSpeed;
 		Velocity = currentVelocity;
+	}
+
+	public bool IsMobAggroed()
+	{
+		return GlobalPosition.DistanceTo(Target.GlobalPosition) < 300.0f;
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		if (!IsMobAggroed())
+		{
+			UpdateHorizontalPosition(delta);
+			UpdateVerticalPosition(delta);
+		} else
+		{
+			UpdateHorizontalPositionAggroed(delta);
+			UpdateVerticalPositionAggroed(delta);
+		}
+		MoveAndSlide();
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

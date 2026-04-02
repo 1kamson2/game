@@ -10,10 +10,6 @@ tile_size = Vector2i(64, 64)
 physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 3
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_w86ok"]
-
 [node name="World" unique_id=1946901387 instance=ExtResource("1_ud4i1")]
 tile_set = SubResource("TileSet_ud4i1")
 script = ExtResource("3_7fqce")
-ChunkSize = 1
-NoiseFunction = SubResource("FastNoiseLite_w86ok")

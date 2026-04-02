@@ -3,11 +3,40 @@
 [ext_resource type="PackedScene" uid="uid://1f22vbar6nab" path="res://World/WorldManager.tscn" id="1_alosw"]
 [ext_resource type="PackedScene" uid="uid://dhcjaqsxrm1w6" path="res://Entities/Player/Player.tscn" id="2_7mcn5"]
 [ext_resource type="Script" uid="uid://dnhx68pic6ysf" path="res://World/WorldManager.cs" id="2_8kur1"]
+[ext_resource type="PackedScene" uid="uid://cswybgqsji74g" path="res://Entities/Mob.tscn" id="4_8kur1"]
 
 [node name="WorldGenerator" unique_id=575379532 instance=ExtResource("1_alosw")]
 script = ExtResource("2_8kur1")
 ChunkSize = 64
-Seed = 67
-NoiseFunctionFrequency = 0.4
+Seed = 2012
+NoiseFunctionFrequency = 0.05
 
-[node name="Entity" parent="." index="0" unique_id=1815607445 instance=ExtResource("2_7mcn5")]
+[node name="Player" parent="." index="0" unique_id=1815607445 instance=ExtResource("2_7mcn5")]
+
+[node name="Mob" parent="." index="1" unique_id=1537061167 instance=ExtResource("4_8kur1")]
+position = Vector2(2572, -1516)
+BaseSpeed = 100.0
+
+[node name="Mob2" parent="." index="2" unique_id=631310438 instance=ExtResource("4_8kur1")]
+position = Vector2(5606, -1078)
+BaseSpeed = 100.0
+
+[node name="Mob3" parent="." index="3" unique_id=1479602622 instance=ExtResource("4_8kur1")]
+position = Vector2(-4048, -2423)
+BaseSpeed = 100.0
+
+[node name="Mob4" parent="." index="4" unique_id=798938144 instance=ExtResource("4_8kur1")]
+position = Vector2(-1245, -2962)
+BaseSpeed = 100.0
+
+[node name="Mob5" parent="." index="5" unique_id=1107003838 instance=ExtResource("4_8kur1")]
+position = Vector2(1558, -3501)
+BaseSpeed = 100.0
+
+[node name="Mob6" parent="." index="6" unique_id=95576987 instance=ExtResource("4_8kur1")]
+position = Vector2(4361, -4040)
+BaseSpeed = 100.0
+
+[node name="Mob7" parent="." index="7" unique_id=406296651 instance=ExtResource("4_8kur1")]
+position = Vector2(-1846, -1641)
+BaseSpeed = 100.0

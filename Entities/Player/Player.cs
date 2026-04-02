@@ -3,6 +3,9 @@ using System;
 
 public partial class Player : Entity
 {
+    [Signal] public delegate void BlockDestroyedEventHandler(int x, int y);
+	[Signal] public delegate void BlockPlacedEventHandler(int x, int y);
+	
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -12,7 +15,8 @@ public partial class Player : Entity
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{ 
-		// right now no processing
+		OnMouseLeftClick();
+		OnMouseRightClick();
 	}
 	
 	public override void UpdateAnimation(double delta)
@@ -26,6 +30,26 @@ public partial class Player : Entity
 		Vector2 currentVelocity = Velocity;
 		currentVelocity.X = MovementDirection.X * BaseSpeed;
 		Velocity = currentVelocity;
+	}
+
+	public void OnMouseLeftClick()
+	{
+		if (Input.IsActionJustPressed("left_click"))
+		{
+			Vector2 mouseGlobalPosition = GetGlobalMousePosition();
+			GD.Print("Left clicked on: ", mouseGlobalPosition);
+			EmitSignal(SignalName.BlockDestroyed, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+		}
+		
+	}
+
+	public void OnMouseRightClick()
+	{
+		if (Input.IsActionJustPressed("right_click"))
+		{
+			Vector2 mouseGlobalPosition = GetGlobalMousePosition();
+			EmitSignal(SignalName.BlockPlaced, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+		}
 	}
 	
 	public override void UpdateVerticalPosition(double delta)

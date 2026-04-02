@@ -37,6 +37,7 @@ public partial class PlainsBiome : Biome
 		this.TileSet = GD.Load<TileSet>(TileTexturePath) ?? GD.Load<TileSet>("Some fallback resource path");
 		if (this.TileSet is null)
 		{
+			
 			GD.PrintErr("No tilesets found.");
 		}
 	}

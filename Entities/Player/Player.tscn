@@ -12,10 +12,10 @@ Damage = 1.0
 metadata/_edit_group_ = true
 
 [node name="ColorRect" type="ColorRect" parent="." index="0" unique_id=313190267]
-offset_left = -584.0
-offset_top = -328.0
-offset_right = 584.0
-offset_bottom = 328.0
+offset_left = -832.0
+offset_top = -448.0
+offset_right = 832.0
+offset_bottom = 448.0
 color = Color(0.22309211, 0.51774335, 0.8817345, 1)
 
 [node name="CollisionShape2D" parent="." index="2" unique_id=355218168 groups=["mobs", "player"]]
@@ -23,5 +23,6 @@ color = Color(0.22309211, 0.51774335, 0.8817345, 1)
 [node name="Camera2D" type="Camera2D" parent="." index="3" unique_id=578844198]
 light_mask = 1023
 visibility_layer = 1023
+zoom = Vector2(1.2, 1.2)
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
