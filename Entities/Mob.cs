@@ -1,70 +1,73 @@
 using Godot;
 using System;
+using System.ComponentModel;
 
-public partial class Mob : Entity
+public interface IMobController
 {
-	public Node2D Target { get; set; }
+	public Player Target { get; set; }
+	[Export] public float MaxDistanceToPlayer { get; set; }
+	public Vector2 PhysicsProcessNoAggroed(double delta);
+	public Vector2 PhysicsProcessAggroed(double delta);
+	public bool IsMobAggroed();
+}
+
+public partial class Mob : Entity, IMobController
+{
+	public Player Target { get; set; }
+	[Export] public float MaxDistanceToPlayer { get; set; } = 500.0f;
+
 	public override void _Ready()
 	{
-		Target = GetTree().GetFirstNodeInGroup("player") as Node2D;
+		CurrentHealth = _baseHealth;
+		MaxHealth = _baseHealth;
+		CurrentSpeed = _baseSpeed;
+		CurrentDamage = _baseDamage;
+		CurrentJumpForce = _baseJumpForce;
+		Target = GetTree().GetFirstNodeInGroup("player") as Player;
+		Target.EntityAttacked += OnBeingAttacked;
 	}
-	
-	public override void UpdateVerticalPosition(double delta) 
+
+	public Vector2 PhysicsProcessNoAggroed(double delta)
 	{
 		Vector2 currentVelocity = Velocity;
 		if (!IsOnFloor())
 		{
-			currentVelocity.Y += 980 * (float)delta; 
+			currentVelocity.Y += 980 * (float) delta; 
+		}
+		else if (IsOnFloor() && GD.Randf() < 0.02f)
+		{
+			currentVelocity.Y = -CurrentJumpForce;
 		}
 
-		if (IsOnFloor() && GD.Randf() < 0.02f)
-		{
-			currentVelocity.Y = -JumpForce;
-		}
-		Velocity = currentVelocity;
-	}
-
-	public void UpdateVerticalPositionAggroed(double delta) 
-	{
-		Vector2 currentVelocity = Velocity;
-		if (!IsOnFloor())
-		{
-			currentVelocity.Y += 980 * (float)delta; 
-		}
-		Velocity = currentVelocity;
-	}
-	
-	public override void UpdateHorizontalPosition(double delta) 
-	{
 		if (GD.Randf() < 0.3f)
 		{
-			return;
-		}
-
-		Vector2 currentVelocity = Velocity;
-		if (GD.Randf() < 0.3f)
-		{
-			MovementDirection = new(GD.Randf() * 2, 0);
+			currentVelocity.X = (GD.Randf() * 2) * CurrentSpeed;
 		}
 		else
 		{
-			MovementDirection = new(GD.Randf() * -2, 0);
+			currentVelocity.X = -(GD.Randf() * 2) * CurrentSpeed;
 		}
-		currentVelocity.X = MovementDirection.X * BaseSpeed;
-		Velocity = currentVelocity;
+		return currentVelocity;
 	}
 
-	public void UpdateHorizontalPositionAggroed(double delta) 
-	{
-		// TODO:
-		// Make this Interface, because:
-		// 1. Is the player in the view, e.g.: Is the distance less than 100? If yes then track, otherwise don't.
-		// 2. There can be different types of movement, e.g.: Rushing, Stalking, etc.
+    public override void _MouseEnter()
+    {
+        EntityGlobals.EntityTargetedByPlayer = this;
+		GD.Print($"Entered {this}");
+    }
 
-		Vector2 currentVelocity = Velocity;
-		MovementDirection = GlobalPosition.DirectionTo(Target.GlobalPosition);
-		currentVelocity.X = MovementDirection.X * BaseSpeed;
-		Velocity = currentVelocity;
+	public override void _MouseExit()
+	{
+		if (EntityGlobals.EntityTargetedByPlayer == this)
+		{
+			EntityGlobals.EntityTargetedByPlayer = null;
+			GD.Print($"Exited {this}");
+		}
+	}
+	
+	public Vector2 PhysicsProcessAggroed(double delta) 
+	{
+		return GlobalPosition.DirectionTo(Target.GlobalPosition) * CurrentSpeed;
 	}
 
 	public bool IsMobAggroed()
@@ -72,16 +75,29 @@ public partial class Mob : Entity
 		return GlobalPosition.DistanceTo(Target.GlobalPosition) < 300.0f;
 	}
 
+	public void OnBeingAttacked(float damageAmount, Entity target)
+	{
+		if (target != this)
+		{
+			return;
+		}
+		CurrentHealth -= damageAmount;
+	}
+
+	public void OnAttack(float damageAmount)
+	{
+		return;
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
-		if (!IsMobAggroed())
+		if (IsMobAggroed())
 		{
-			UpdateHorizontalPosition(delta);
-			UpdateVerticalPosition(delta);
-		} else
+			Velocity = PhysicsProcessAggroed(delta);
+		} 
+		else
 		{
-			UpdateHorizontalPositionAggroed(delta);
-			UpdateVerticalPositionAggroed(delta);
+			Velocity = PhysicsProcessNoAggroed(delta);
 		}
 		MoveAndSlide();
 	}
@@ -89,7 +105,10 @@ public partial class Mob : Entity
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{ 
-		// right now no processing
+		if (CurrentHealth < 0)
+		{
+			FreeEntity();
+		}
 	}
 	
 	public override void UpdateAnimation(double delta)
@@ -99,6 +118,9 @@ public partial class Mob : Entity
 	
 	public override void FreeEntity()
 	{
+		Target.EntityAttacked -= OnBeingAttacked;
+		EntityGlobals.FreeEntityTargetedByPlayer();
+		GD.Print("I died bye.");
 		QueueFree();
 	}
 }

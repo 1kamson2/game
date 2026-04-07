@@ -5,8 +5,3 @@
 
 [node name="Entity" unique_id=1815607445 instance=ExtResource("1_6m41h")]
 script = ExtResource("1_nelae")
-EntityName = "GenericMob"
-CurrentHealth = 100.0
-MaxHealth = 100.0
-BaseSpeed = 500.0
-Damage = 1.0

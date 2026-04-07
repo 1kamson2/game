@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://cjxvkl0l8r22g"]
+
+[ext_resource type="Script" uid="uid://dgogb3csp08xt" path="res://Entities/Inventory.cs" id="1_thhj1"]
+
+[node name="Inventory" type="Node2D" unique_id=137671803]
+script = ExtResource("1_thhj1")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=1503422811]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="GridContainer" type="GridContainer" parent="PanelContainer" unique_id=709587967]
+layout_mode = 2
+columns = 10

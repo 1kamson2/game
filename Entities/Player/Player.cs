@@ -1,15 +1,19 @@
 using Godot;
 using System;
 
-public partial class Player : Entity
+public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 {
-    [Signal] public delegate void BlockDestroyedEventHandler(int x, int y);
-	[Signal] public delegate void BlockPlacedEventHandler(int x, int y);
-	
+	public Inventory Inventory;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		CurrentHealth = _baseHealth;
+		MaxHealth = _baseHealth;
+		CurrentSpeed = _baseSpeed;
+		CurrentDamage = _baseDamage;
+		CurrentJumpForce = _baseJumpForce;
 		AddToGroup("player");
+		Inventory = GetNode<Inventory>("Inventory");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -23,22 +27,30 @@ public partial class Player : Entity
 	{
 		// right now no animations
 	}
-	
-	public override void UpdateHorizontalPosition(double delta)
+
+	public void OnBeingAttacked(float damageAmount, Entity target)
 	{
-		MovementDirection = Input.GetVector("go_left", "go_right", "jump", "drop_faster");
-		Vector2 currentVelocity = Velocity;
-		currentVelocity.X = MovementDirection.X * BaseSpeed;
-		Velocity = currentVelocity;
+		
+	}
+
+	public void OnAttack(float damageAmount, Entity target)
+	{
+		EmitSignal(SignalName.EntityAttacked, damageAmount, target);
 	}
 
 	public void OnMouseLeftClick()
 	{
 		if (Input.IsActionJustPressed("left_click"))
 		{
-			Vector2 mouseGlobalPosition = GetGlobalMousePosition();
-			GD.Print("Left clicked on: ", mouseGlobalPosition);
-			EmitSignal(SignalName.BlockDestroyed, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+			if (EntityGlobals.EntityTargetedByPlayer is not null)
+			{
+				OnAttack(CurrentDamage, EntityGlobals.EntityTargetedByPlayer);
+			}
+			else
+			{
+				Vector2 mouseGlobalPosition = GetGlobalMousePosition();
+				EmitSignal(SignalName.BlockDestroyed, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+			}
 		}
 		
 	}
@@ -51,20 +63,32 @@ public partial class Player : Entity
 			EmitSignal(SignalName.BlockPlaced, mouseGlobalPosition.X, mouseGlobalPosition.Y);
 		}
 	}
-	
-	public override void UpdateVerticalPosition(double delta)
-	{
+
+    public override void _PhysicsProcess(double delta)
+    {
 		Vector2 currentVelocity = Velocity;
 		if (!IsOnFloor())
 		{
-			currentVelocity.Y += 980 * (float)delta; 
+			currentVelocity.Y += 980 * (float) delta;
 		}
-		if (IsOnFloor() && MovementDirection.Y < 0)
+
+		if (Input.IsActionJustPressed("jump") && IsOnFloor())
 		{
-			currentVelocity.Y = -JumpForce;
+			currentVelocity.Y = -CurrentJumpForce;
+		}
+
+		float direction = Input.GetAxis("go_left", "go_right");
+		if (direction != 0)
+		{
+			currentVelocity.X = direction * CurrentSpeed;
+		}
+		else
+		{
+			currentVelocity.X = Mathf.MoveToward(Velocity.X, 0, CurrentSpeed);
 		}
 		Velocity = currentVelocity;
-	}
+		MoveAndSlide();
+    }
 	
 	public override void FreeEntity()
 	{

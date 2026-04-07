@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 public partial class WorldManager : Node
 {
+	private Player _player;
+	private Timer _mobSpawnTimer;
 	public Dictionary<BiomeNames, PackedScene> Biomes { get; private set; }
 	public Biome CurrentBiome { get; set; }
 	// Define how big chunk is, the chunk will be of size ChunkSize x ChunkSize
@@ -24,38 +26,46 @@ public partial class WorldManager : Node
 	public void ScheduleEventGeneration() {}
 	public void ScheduleLootGeneration() {}
 
-	// FIXME: It works, but it is completely cooked.
 	public virtual void OnBlockDestroyed(int x, int y)
 	{
-		Vector2I mappedCoordinates = CurrentBiome.LocalToMap(CurrentBiome.ToLocal(new Vector2(x, y)));
-		CurrentBiome.EraseCell(mappedCoordinates);
+		Vector2I mappedCoordinates = CurrentBiome.LocalToMap(CurrentBiome.ToLocal(new(x, y)));
+		CurrentBiome.TryDestroyBlock(mappedCoordinates, ref _player.Inventory);
 	}
 
-	// FIXME: It works, but it is completely cooked.
-	// FIXME: A block's hitbox is way smaller than texture.
 	public virtual void OnBlockPlaced(int x, int y)
 	{
-		Vector2I mappedCoordinates = CurrentBiome.LocalToMap(CurrentBiome.ToLocal(new Vector2(x, y)));
-		CurrentBiome.SetCell(mappedCoordinates, 1, CurrentBiome.BiomeParts[BiomePartNames.SolidGround].AtlasCoordinates);
+		Vector2I mappedCoordinates = CurrentBiome.LocalToMap(CurrentBiome.ToLocal(new(x, y)));
+		CurrentBiome.TryPlaceBlock(mappedCoordinates, ref _player.Inventory);
 	}
 	
 	public override void _Ready()
 	{
 		// TODO: After multiple biomes, do a lazy load.
+		// Initialize function parameters and instantiate biomes 
 		NoiseFunction.Frequency = NoiseFunctionFrequency;
 		NoiseFunction.NoiseType = NoiseFunctionNoiseType;
-		var player = GetTree().GetFirstNodeInGroup("player") as Player;
-		player.BlockDestroyed += OnBlockDestroyed;
-		player.BlockPlaced += OnBlockPlaced;
 		Biomes = new() {
 			[BiomeNames.Overworld] = GD.Load<PackedScene>("res://World/Overworld/PlainsBiome.tscn")
 		};
+		CurrentBiome = Biomes[BiomeNames.Overworld].Instantiate() as Biome;
+		AddChild(CurrentBiome);
+		CurrentBiome.LoadTextures();
+		CurrentBiome.OrchestrateChunkGeneration(Vector2.Zero, ChunkSize, NoiseFunction);
 
-		PlainsBiome plainsBiome = (PlainsBiome) Biomes[BiomeNames.Overworld].Instantiate();
-		CurrentBiome = plainsBiome;
-		AddChild(plainsBiome);
-		plainsBiome.LoadTileTextures();
-		plainsBiome.OrchestrateChunkGeneration(Vector2.Zero, ChunkSize, NoiseFunction);
+		// Spawn player
+		_player = GD.Load<PackedScene>("res://Entities/Player/Player.tscn").Instantiate() as Player;
+		_player.BlockDestroyed += OnBlockDestroyed;
+		_player.BlockPlaced += OnBlockPlaced;
+		AddChild(_player);
+
+		_mobSpawnTimer = GetNode<Timer>("MobSpawnTimer/Timer");
+		_mobSpawnTimer.Start();
+		_mobSpawnTimer.Timeout += OnMobSpawnTimeout;
+	}
+
+	private void OnMobSpawnTimeout()
+	{
+		bool mobSpawned = CurrentBiome.OrchestrateMobGeneration(_player.GlobalPosition);
 	}
 
 	public override void _Process(double delta)

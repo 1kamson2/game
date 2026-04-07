@@ -1,0 +1,9 @@
+[gd_resource type="Resource" format=3 uid="uid://dxlut3sapm832"]
+
+[ext_resource type="Texture2D" uid="uid://c6u0lpbfnwlm3" path="res://Resources/icon.svg" id="1_0p7ev"]
+[ext_resource type="Script" uid="uid://yncwia1vht7x" path="res://Entities/ItemContainer.cs" id="2_1uhvt"]
+
+[resource]
+script = ExtResource("2_1uhvt")
+ItemName = 4
+Icon = ExtResource("1_0p7ev")
