@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bcsphbja6m6oe"]
+
+[ext_resource type="Script" uid="uid://fdfojvb14ble" path="res://Utilities/BlockManager/BlockManager.cs" id="1_8shbq"]
+
+[node name="BlockManager" type="Node2D" unique_id=1871308222]
+script = ExtResource("1_8shbq")

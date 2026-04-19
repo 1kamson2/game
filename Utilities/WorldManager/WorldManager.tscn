@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://1f22vbar6nab"]
+
+[ext_resource type="Script" uid="uid://dnhx68pic6ysf" path="res://Utilities/WorldManager/WorldManager.cs" id="1_le2uf"]
+
+[node name="WorldGenerator" type="Node2D" unique_id=575379532]
+script = ExtResource("1_le2uf")
+ChunkSize = 64
+Seed = 100
+NoiseFunctionFrequency = 0.05

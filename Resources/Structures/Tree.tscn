@@ -1,0 +1,10 @@
+[gd_scene format=4 uid="uid://bpw5jssfpp1o8"]
+
+[ext_resource type="TileSet" uid="uid://dv5legwxbjriq" path="res://Resources/biome_plains_tileset.tres" id="1_iq6cn"]
+
+[node name="Tree" type="Node2D" unique_id=1572009908]
+position = Vector2(-8, 0)
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=2060354298]
+tile_map_data = PackedByteArray("AAAAAP//AQANAAwAAAAAAP7/AQANAAwAAAAAAP3/AQANAAwAAAAAAPv/AQANAAwAAAAAAPz/AQANAAwAAAAAAPr/AQANAAwAAAAAAPn/AQANAAwAAAAAAPj/AQANAAwAAAAAAPf/AQANAAwAAAABAPf/AQAAAA8AAAACAPf/AQAAAA8AAAD///f/AQAAAA8AAAD+//f/AQAAAA8AAAD///b/AQAAAA8AAAAAAPb/AQAAAA8AAAABAPb/AQAAAA8AAAAAAPX/AQAAAA8AAAADAPf/AQAAAA8AAAACAPb/AQAAAA8AAAABAPX/AQAAAA8AAAAAAPT/AQAAAA8AAAD///X/AQAAAA8AAAD+//b/AQAAAA8AAAD9//f/AQAAAA8AAAABAPj/AQAAAA8AAAD///j/AQAAAA8AAAA=")
+tile_set = ExtResource("1_iq6cn")

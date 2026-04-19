@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://cjxvkl0l8r22g"]
+
+[ext_resource type="Script" uid="uid://dgogb3csp08xt" path="res://Entities/Player/Inventory/Inventory.cs" id="1_thhj1"]
+
+[node name="Inventory" type="HBoxContainer" unique_id=1898704623]
+offset_right = 8.0
+offset_bottom = 8.0
+alignment = 1
+script = ExtResource("1_thhj1")
+
+[node name="Items" type="VBoxContainer" parent="." unique_id=1526333700]
+layout_mode = 2
+tooltip_text = "Inventory"
+
+[node name="Grid" type="GridContainer" parent="Items" unique_id=709587967]
+layout_mode = 2
+columns = 10
+
+[node name="Recipes" type="VBoxContainer" parent="." unique_id=1576341159]
+clip_contents = true
+layout_direction = 2
+layout_mode = 2
+size_flags_horizontal = 3
+tooltip_text = "Recipes"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Recipes" unique_id=1866083302]
+custom_minimum_size = Vector2(128, 64)
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+
+[node name="Grid" type="GridContainer" parent="Recipes/ScrollContainer" unique_id=995652124]
+layout_mode = 2

@@ -1,19 +1,20 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 
-public static class ResourceManager
+public interface IRegistrable
 {
-	public static Texture2D TileToTexture(ref TileSet tileSet, Vector2I atlasCoordinates, int sourceId)
-	{
-		if (tileSet is null)
-		{
-			return null;
-		}
+	/// <summary>
+	/// Id is used to identify a resource. It is recommended to assign the Id in the resource and don't assign it in the code.
+	/// </summary>
+	[Export] string Id { get; set; }
+}
 
-		TileSetAtlasSource source = tileSet.GetSource(sourceId) as TileSetAtlasSource;
-		AtlasTexture atlasTexture = new AtlasTexture();
-		atlasTexture.Atlas = source.Texture;
-		atlasTexture.Region = source.GetTileTextureRegion(atlasCoordinates);
-		return atlasTexture;
-	}
+public abstract partial class ResourceManager<T> : Node2D where T : IRegistrable
+{
+	protected Dictionary<string, T> Registry { get; } = new();
+	public abstract bool RegisterResource(T resource);
+	public abstract bool UnregisterResource(string id);
+	public abstract T GetResource(string id);
+	public abstract U GetResourceAs<U>(string id) where U : T;
 }

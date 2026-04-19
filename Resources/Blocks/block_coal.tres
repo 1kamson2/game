@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://40my2jukcqh4"]
+
+[ext_resource type="Script" uid="uid://cxliretlc4b7o" path="res://Utilities/BlockManager/Block.cs" id="1_cjxno"]
+
+[resource]
+script = ExtResource("1_cjxno")
+Id = "block_coal"
+MaxStackSize = 64
+IsStackable = true
+Name = "Coal"
+NoiseBoundaries = Vector2(-0.3, -0.3)
+HeightBoundaries = Vector2(100, 255)
+TilesetCoordinates = Vector2i(9, 5)

@@ -11,18 +11,14 @@ public interface IMobController
 	public bool IsMobAggroed();
 }
 
-public partial class Mob : Entity, IMobController
+[GlobalClass] public partial class Mob : Entity, IMobController
 {
 	public Player Target { get; set; }
 	[Export] public float MaxDistanceToPlayer { get; set; } = 500.0f;
 
 	public override void _Ready()
 	{
-		CurrentHealth = _baseHealth;
-		MaxHealth = _baseHealth;
-		CurrentSpeed = _baseSpeed;
-		CurrentDamage = _baseDamage;
-		CurrentJumpForce = _baseJumpForce;
+		base._Ready();
 		Target = GetTree().GetFirstNodeInGroup("player") as Player;
 		Target.EntityAttacked += OnBeingAttacked;
 	}
@@ -52,15 +48,15 @@ public partial class Mob : Entity, IMobController
 
     public override void _MouseEnter()
     {
-        EntityGlobals.EntityTargetedByPlayer = this;
+        EntityGlobalValues.EntityTargetedByPlayer = this;
 		GD.Print($"Entered {this}");
     }
 
 	public override void _MouseExit()
 	{
-		if (EntityGlobals.EntityTargetedByPlayer == this)
+		if (EntityGlobalValues.EntityTargetedByPlayer == this)
 		{
-			EntityGlobals.EntityTargetedByPlayer = null;
+			EntityGlobalValues.EntityTargetedByPlayer = null;
 			GD.Print($"Exited {this}");
 		}
 	}
@@ -119,8 +115,7 @@ public partial class Mob : Entity, IMobController
 	public override void FreeEntity()
 	{
 		Target.EntityAttacked -= OnBeingAttacked;
-		EntityGlobals.FreeEntityTargetedByPlayer();
-		GD.Print("I died bye.");
+		EntityGlobalValues.FreeEntityTargetedByPlayer();
 		QueueFree();
 	}
 }

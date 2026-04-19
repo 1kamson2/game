@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://br6api8q6siwl"]
+
+[ext_resource type="PackedScene" uid="uid://bra4koakfn8bu" path="res://Utilities/GlobalManagers.tscn" id="2_81q03"]
+
+[node name="PlayableScene" type="Node2D" unique_id=575379532]
+
+[node name="GlobalManagers" parent="." unique_id=287978930 instance=ExtResource("2_81q03")]

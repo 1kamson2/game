@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://c3w0xd0ow67lk"]
+
+[ext_resource type="Script" uid="uid://cxliretlc4b7o" path="res://Utilities/BlockManager/Block.cs" id="1_l0q51"]
+
+[resource]
+script = ExtResource("1_l0q51")
+Id = "block_air"
+MaxStackSize = 64
+Name = "Air"
+IsBreakable = false
+NoiseBoundaries = Vector2(-0.2, 0.2)
+HeightBoundaries = Vector2(70, 255)
+TilesetCoordinates = Vector2i(-1, -1)

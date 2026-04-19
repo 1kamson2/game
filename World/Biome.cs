@@ -3,20 +3,11 @@ using System;
 using System.Collections.Generic;
 
 
-public abstract partial class Biome : TileMapLayer
+[GlobalClass] public abstract partial class Biome : TileMapLayer, IRegistrable
 {
-	/// <summary>
-	/// BiomeElementLookup translates BiomeElementNames to BiomeElement
-	/// </summary>
-	public Dictionary<BiomeElementNames, BiomeElement> BiomeElementLookup { get; set; }
-	/// <summary>
-	/// BiomeElementNamesLookup translates Atlas Coordiantes to BiomeElementNames
-	/// </summary>
-	public Dictionary<Vector2I, BiomeElementNames> BiomeElementNamesLookup { get; set; }
+	[Export] public string Id { get; set; }
 	// Define how big a biome will be
-	public Vector2I SpanningBoundaries { get; protected set; } = new(int.MinValue, int.MinValue);
-	// Define the path for tile textures
-	public string TileTexturePath { get; set; } = "";
+	[Export] public Vector2I SpanningBoundaries { get; protected set; } = new(int.MinValue, int.MinValue);
 	// Generate chunks base on the given coordinates. It will render chunks to fillup the entire viewport.
 	// Then renders the chunks in the up, right, down, left directions.
 	public abstract void OrchestrateChunkGeneration(Vector2 coordinates, int chunkSize, FastNoiseLite noiseFunction);
@@ -25,84 +16,19 @@ public abstract partial class Biome : TileMapLayer
 	public abstract void OrchestrateEventGeneration(Vector2 coordinates);
 	public abstract void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory);
 	public abstract void TryPlaceBlock(Vector2I mouseCoordinates, ref Inventory playersInventory);
-	public abstract void LoadTextures();
-
-	public virtual (int, int) FindBiomePartYBoundaries(ref ChunkArea areaToBeChunked, BiomeElementNames biomePart)
+	public virtual (int, int) FindBlockHeightBoundaries(ref ChunkArea areaToBeChunked, string blockName)
 	{
+		Block block = GlobalManagers.Instance.GetManager<BlockManager>().GetResource(blockName);
 		return ((int)Mathf.Max(
 			areaToBeChunked.UpperLeftCorner.Y, 
-			BiomeElementLookup[biomePart].YLevelBoundaries.X
+			block.HeightBoundaries.X
 		), (int)Mathf.Min(
 			areaToBeChunked.LowerRightCorner.Y, 
-			BiomeElementLookup[biomePart].YLevelBoundaries.Y
+			block.HeightBoundaries.Y
 		));
 	}
 }
-public enum BiomeNames
-{
-	Overworld,
-}
 
-public class BiomeElement
-{
-	// The boundary is inclusive
-	public Vector2 NoiseBoundaries{ get;  set; }
-	// The boundary is inclusive
-	public Vector2 YLevelBoundaries { get;  set; }
-	// Coordinates in the tileset
-	public Vector2I AtlasCoordinates { get; set; }
-
-	public BiomeElement(ref Vector2 noiseBoundaries, ref Vector2 yLevelBoundaries, ref Vector2I atlasCoordinates)
-	{
-		// TODO: Add checking of the parameters later.
-		NoiseBoundaries = noiseBoundaries;
-		YLevelBoundaries = yLevelBoundaries;
-		AtlasCoordinates = atlasCoordinates;
-	}
-
-	public BiomeElement() { }
-
-	public BiomeElement WithNoiseBoundaries(float lowerNoiseBoundary, float upperNoiseBoundary)
-	{
-		NoiseBoundaries = new(lowerNoiseBoundary, upperNoiseBoundary);
-		return this;
-	}
-
-	public BiomeElement WithYLevelBoundaries(int lowerYLevelBoundary, int upperYLevelBoundary)
-	{
-		YLevelBoundaries = new(lowerYLevelBoundary, upperYLevelBoundary);
-		return this;
-	}
-
-	public BiomeElement WithAtlasCoordinates(int x, int y)
-	{
-		AtlasCoordinates = new(x, y);
-		return this;
-	}
-	
-	public bool CanSpawnAt(int y, float currentNoise)
-	{
-		bool yRequirement = (y >= YLevelBoundaries.X && 
-							 y <= YLevelBoundaries.Y);
-		bool noiseRequirement = (currentNoise >= NoiseBoundaries.X && 
-								 currentNoise <= NoiseBoundaries.Y);
-		return yRequirement && noiseRequirement;
-	}
-}
-
-/// <summary>
-/// BiomeElementNames enum stores information about what biome can contain, e.g.: structures (Surface, SolidGround, Caves, etc.),
-/// ores (Coal, Iron, Diamond) 
-/// </summary>
-public enum BiomeElementNames
-{
-	Grass,
-	Dirt,
-	Air,
-	Coal,
-	Iron,
-	Diamond
-}
 
 /// <summary>
 ///  ChunkArea defines boundaries that chunking must occur in.

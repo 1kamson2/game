@@ -1,17 +1,10 @@
 using Godot;
 using System;
 
-public interface IEntityCanAttack
-{
-	public abstract void OnAttack(float damageAmount, Entity target);
-}
-
-public interface IEntityIsAttackable
-{
-	public abstract void OnBeingAttacked(float damageAmount, Entity target);
-}
-
-public static class EntityGlobals
+/// <summary>
+/// EntityGlobalValues are used to define the global state of entity variables
+/// </summary>
+public static class EntityGlobalValues
 {
 	/// <summary>
 	/// EntityTargetedByPlayer defines what entity was targeted by the player
@@ -23,6 +16,16 @@ public static class EntityGlobals
 	public static Entity PlayerTargetedByEntity { get; set; } = null;
 	public static void FreeEntityTargetedByPlayer() => EntityTargetedByPlayer = null;
 	public static void FreePlayerTargetedByEntity() => PlayerTargetedByEntity = null;
+}
+
+public interface IEntityCanAttack
+{
+	public abstract void OnAttack(float damageAmount, Entity target);
+}
+
+public interface IEntityIsAttackable
+{
+	public abstract void OnBeingAttacked(float damageAmount, Entity target);
 }
 
 /// <summary>

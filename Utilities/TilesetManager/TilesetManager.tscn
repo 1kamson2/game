@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://podcu3d171s0"]
+
+[ext_resource type="Script" uid="uid://sxvhqsvcwtg0" path="res://Utilities/TilesetManager/TilesetManager.cs" id="1_16b4n"]
+
+[node name="TilesetManager" type="Node2D" unique_id=335407876]
+script = ExtResource("1_16b4n")

@@ -2,9 +2,11 @@
 
 [ext_resource type="Script" uid="uid://dktxanw2ctra" path="res://Entities/Player/Player.cs" id="1_oo13o"]
 [ext_resource type="PackedScene" uid="uid://hrodjmoax5xs" path="res://Entities/Entity.tscn" id="1_ww0jn"]
-[ext_resource type="PackedScene" uid="uid://cjxvkl0l8r22g" path="res://Entities/Inventory.tscn" id="3_vweq0"]
+[ext_resource type="PackedScene" uid="uid://cjxvkl0l8r22g" path="res://Entities/Player/Inventory/Inventory.tscn" id="3_vweq0"]
 
 [node name="Entity" unique_id=1815607445 groups=["player"] instance=ExtResource("1_ww0jn")]
+visibility_layer = 1023
+z_index = 999
 disable_mode = 1
 safe_margin = 1.0
 script = ExtResource("1_oo13o")
@@ -19,7 +21,10 @@ zoom = Vector2(2, 2)
 position_smoothing_enabled = true
 rotation_smoothing_enabled = true
 
-[node name="Inventory" parent="." index="1" unique_id=137671803 instance=ExtResource("3_vweq0")]
-position = Vector2(-550, -300)
+[node name="CollisionShape2D" parent="." index="2" unique_id=355218168 groups=["mobs", "player"]]
 
-[node name="CollisionShape2D" parent="." index="3" unique_id=355218168 groups=["mobs", "player"]]
+[node name="Inventory" parent="." index="3" unique_id=137671803 instance=ExtResource("3_vweq0")]
+offset_left = -550.0
+offset_top = -300.0
+offset_right = -542.0
+offset_bottom = -292.0

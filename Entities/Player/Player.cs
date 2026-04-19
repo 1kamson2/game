@@ -1,17 +1,14 @@
 using Godot;
 using System;
 
+// TODO: Fix the inventory visibility
 public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 {
 	public Inventory Inventory;
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
-		CurrentHealth = _baseHealth;
-		MaxHealth = _baseHealth;
-		CurrentSpeed = _baseSpeed;
-		CurrentDamage = _baseDamage;
-		CurrentJumpForce = _baseJumpForce;
+		base._Ready();
 		AddToGroup("player");
 		Inventory = GetNode<Inventory>("Inventory");
 	}
@@ -42,9 +39,9 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 	{
 		if (Input.IsActionJustPressed("left_click"))
 		{
-			if (EntityGlobals.EntityTargetedByPlayer is not null)
+			if (EntityGlobalValues.EntityTargetedByPlayer is not null)
 			{
-				OnAttack(CurrentDamage, EntityGlobals.EntityTargetedByPlayer);
+				OnAttack(CurrentDamage, EntityGlobalValues.EntityTargetedByPlayer);
 			}
 			else
 			{

@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://dubvbs43xddku"]
+
+[ext_resource type="Script" uid="uid://cxliretlc4b7o" path="res://Utilities/BlockManager/Block.cs" id="1_ug8tj"]
+
+[resource]
+script = ExtResource("1_ug8tj")
+Id = "block_wood"
+MaxStackSize = 64
+IsStackable = true
+Name = "Wood"
+TilesetCoordinates = Vector2i(13, 12)
+metadata/_custom_type_script = "uid://cxliretlc4b7o"

@@ -1,7 +1,0 @@
-[gd_scene format=3 uid="uid://1f22vbar6nab"]
-
-[ext_resource type="PackedScene" uid="uid://c0aqxwm0v3jff" path="res://World/MobSpawnTimer.tscn" id="1_k7088"]
-
-[node name="WorldGenerator" type="Node2D" unique_id=575379532]
-
-[node name="MobSpawnTimer" parent="." unique_id=1310459953 instance=ExtResource("1_k7088")]
