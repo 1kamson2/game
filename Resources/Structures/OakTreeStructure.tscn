@@ -1,0 +1,12 @@
+[gd_scene format=4 uid="uid://c51e34dohk131"]
+
+[ext_resource type="Script" uid="uid://7w46dhmg6cu1" path="res://Resources/Structures/OakTreeStructure.cs" id="1_sutjw"]
+[ext_resource type="TileSet" uid="uid://dv5legwxbjriq" path="res://Resources/biome_plains_tileset.tres" id="2_7r5o1"]
+
+[node name="Tree" type="TileMapLayer" unique_id=1167064960]
+tile_map_data = PackedByteArray("AAAAAP//AQANAAwAAAAAAP7/AQANAAwAAAAAAP3/AQANAAwAAAAAAPz/AQANAAwAAAAAAPv/AQANAAwAAAAAAPr/AQANAAwAAAAAAPn/AQAAAA8AAAABAPv/AQAAAA8AAAACAPv/AQAAAA8AAAADAPv/AQAAAA8AAAACAPr/AQAAAA8AAAABAPr/AQAAAA8AAAABAPn/AQAAAA8AAAAAAPj/AQAAAA8AAAD///n/AQAAAA8AAAD///r/AQAAAA8AAAD///v/AQAAAA8AAAD+//v/AQAAAA8AAAD+//r/AQAAAA8AAAD9//v/AQAAAA8AAAA=")
+tile_set = ExtResource("2_7r5o1")
+script = ExtResource("1_sutjw")
+Id = "structure_oak_tree"
+SpawnChance = 0.7
+SpaceInBetween = 25

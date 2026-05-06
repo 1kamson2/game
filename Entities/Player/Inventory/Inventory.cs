@@ -60,7 +60,6 @@ public partial class Inventory : HBoxContainer
             _recipeGrid.AddChild(slotPanel);
 
             int index = i;
-            // FIXME: ?
             slotPanel.GuiInput += (inputEvent) => OnSlotGuiInput(inputEvent, index + _baseInventoryCapacity);
 
 
@@ -239,7 +238,7 @@ public partial class Inventory : HBoxContainer
         // TODO: Add signal emitting so there is no reason to call update everytime
         // TODO: Recipes are added at the end of the container
         GlobalManagers.Instance.GetManager<ItemManager>().FindAllCraftableItems(this);
-        Recipes.Sort();
+        Recipes.OrderBy(item => item.Id);
         for (int i = 0; i < _baseRecipeCapacity; i++)
         {
             if (Recipes[i] is null)

@@ -1,6 +1,5 @@
 using Godot;
-using System;
-using System.Collections.Generic;
+
 
 public partial class WorldManager : ResourceManager<Biome>
 {
@@ -13,10 +12,6 @@ public partial class WorldManager : ResourceManager<Biome>
 	private static string[] _biomeScenes = {
 		"PlainsBiome.tscn",
 	};
-	private static Dictionary<string, PackedScene> StructureRegistry = new Dictionary<string, PackedScene>
-	{
-		{ "structure_tree",  GD.Load<PackedScene>("res://Resources/Structures/Tree.tscn") },
-	};
 	[Export] public int ChunkSize { get; set; } = int.MinValue;
 	// Define the Seed for the world
 	[Export] public int Seed { get; set; } = int.MinValue;
@@ -26,25 +21,15 @@ public partial class WorldManager : ResourceManager<Biome>
 	[Export] public FastNoiseLite.NoiseTypeEnum NoiseFunctionNoiseType { get; set; } = FastNoiseLite.NoiseTypeEnum.Perlin;
 	// Define noise function, used for chunk generation
 	[Export] public FastNoiseLite NoiseFunction { get; set; } = new FastNoiseLite();
+	public Godot.Vector2 ViewportSize { get; set; }
+	public ChunkArea CurrentArea { get; set; }
 	public void ScheduleChunkUnload() { }
 	public void ScheduleChunkLoad() { }
 	public void ScheduleChunkSave() { }
 	public void ScheduleWorldGeneration()
 	{
-		CurrentBiome.OrchestrateChunkGeneration(Vector2.Zero, ChunkSize, NoiseFunction);
-		// Render trees
-		{
-			var tree = StructureRegistry["structure_tree"];
-			for (int currentX = CurrentBiome.SpanningBoundaries.X; currentX < CurrentBiome.SpanningBoundaries.Y; currentX += 30)
-			{
-				if (GD.Randf() < 0.2)
-				{
-					Node2D treeInstance = tree.Instantiate<Node2D>();
-					treeInstance.Position = new(currentX, 200);
-					CurrentBiome.AddChild(treeInstance);
-				}
-			}
-		}
+		CurrentBiome.OrchestrateChunkGeneration(CurrentArea, NoiseFunction);
+		CurrentBiome.OrchestrateStructureGeneration(CurrentArea, NoiseFunction);
 	}
 	public void ScheduleMobGeneration() { }
 	public void ScheduleEventGeneration() { }
@@ -135,6 +120,9 @@ public partial class WorldManager : ResourceManager<Biome>
 
 	public override void _Ready()
 	{
+		// FIXME: Potential problem
+		ViewportSize = GetViewport().GetVisibleRect().Size;
+		CurrentArea = new ChunkArea(Godot.Vector2.Zero, ViewportSize, ChunkSize);
 		// Spawn player
 		_player = GD.Load<PackedScene>("res://Entities/Player/Player.tscn").Instantiate<Player>();
 		_player.BlockDestroyed += OnBlockDestroyed;
@@ -171,7 +159,7 @@ public partial class WorldManager : ResourceManager<Biome>
 
 	private void OnMobSpawnTimeout()
 	{
-		bool mobSpawned = CurrentBiome.OrchestrateMobGeneration(_player.GlobalPosition);
+		bool mobSpawned = CurrentBiome.OrchestrateMobGeneration(CurrentArea, NoiseFunction, _player.GlobalPosition);
 	}
 
 	public override void _Process(double delta)

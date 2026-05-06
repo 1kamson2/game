@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="UsableItem" format=3 uid="uid://u31l8xmbsck5"]
+
+[ext_resource type="Script" uid="uid://dj8t1mvo1mp12" path="res://Utilities/ItemManager/CraftingInformation.cs" id="1_m152m"]
+[ext_resource type="Script" uid="uid://bv5ve33t5sgo2" path="res://Utilities/ItemManager/UsableItem.cs" id="2_5v2hg"]
+
+[sub_resource type="Resource" id="Resource_t8f6y"]
+script = ExtResource("1_m152m")
+Id = "block_dirt"
+Amount = 8
+metadata/_custom_type_script = "uid://dj8t1mvo1mp12"
+
+[resource]
+script = ExtResource("2_5v2hg")
+MaxStackSize = 16
+Name = "Health Regen Potion"
+IsStackable = true
+TilesetCoordinates = Vector2i(29, 24)
+RequiredItems = Array[Object]([SubResource("Resource_t8f6y")])
+Stats = Array[Object]([null])
+Id = "item_potion_health_regen"

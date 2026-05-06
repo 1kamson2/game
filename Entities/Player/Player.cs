@@ -1,7 +1,6 @@
 using Godot;
 using System;
 
-// TODO: Fix the inventory visibility
 public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 {
 	public Inventory Inventory;

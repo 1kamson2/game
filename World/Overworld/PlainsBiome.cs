@@ -1,30 +1,76 @@
 using Godot;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 // TODO: Trees render incorrectly.
 public partial class PlainsBiome : Biome
 {
-	public override void OrchestrateEventGeneration(Vector2 coordinates) { }
-	public override bool OrchestrateMobGeneration(Vector2 coordinates)
+	public override void OrchestrateEventGeneration(ChunkArea area, FastNoiseLite noiseFunction) { }
+
+	private void GenerateTreeStructures(ChunkArea area)
+	{
+		Block grass = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_grass");
+		IEnumerable<string> treeKeys = _structureRegistry.Keys.Where(k => k.Contains("tree"));
+		var horizontalRange = area.HorizontalRange();
+		var verticalRange = area.VerticalRange();
+		foreach (string treeKey in treeKeys)
+		{
+			Structure structure = _structureRegistry[treeKey].Instantiate<Structure>();
+			structure.Load();
+			for (int x = horizontalRange.lo; x < horizontalRange.hi; x += structure.SpaceInBetween)
+			{
+				for (int y = verticalRange.lo; y < verticalRange.hi; y++)
+				{
+					Vector2I currentCellPosition = new(x, y);
+					Vector2I currentAtlasCoordinates = GetCellAtlasCoords(currentCellPosition);
+					if (currentAtlasCoordinates != grass.TilesetCoordinates) { continue; }
+					if (GD.Randf() > structure.SpawnChance) { continue; }
+					var mappedTilePositions = structure.TilesGlobalPositions(currentCellPosition);
+					for (int idx = 0; idx < structure.TilesPositions.Count(); idx++)
+					{
+						SetCell(mappedTilePositions[idx], 1, structure.TileAtlasCoords[idx]);
+					}
+					// Tree generated, exit.
+					break;
+				}
+			}
+		}
+
+	}
+
+	public override void OrchestrateStructureGeneration(ChunkArea area, FastNoiseLite noiseFunction)
+	{
+		GenerateTreeStructures(area);
+	}
+
+	public override bool OrchestrateMobGeneration(ChunkArea area, FastNoiseLite noiseFunction, Vector2 playerPosition)
 	{
 		// Spawn a mob
 		if (GD.Randf() <= 0.5)
 		{
 			Mob mobInstance = GD.Load<PackedScene>("res://Entities/Mobs/Mob.tscn").Instantiate<Mob>();
-			int distFromPlayer = GD.RandRange(-1000, 1000);
-			distFromPlayer = Mathf.Abs(distFromPlayer) <= 200 ? distFromPlayer + 300 : distFromPlayer;
-			coordinates.X = coordinates.X + distFromPlayer;
-			mobInstance.GlobalPosition = coordinates;
+			int randomDistance = GD.RandRange(-500, 500);
+			Vector2 mobPosition = playerPosition;
+			var horizontalRange = area.HorizontalRange();
+			var verticalRange = area.VerticalRange();
+			mobPosition.X = Math.Clamp(mobPosition.X + randomDistance, horizontalRange.lo, horizontalRange.hi);
+			mobPosition.Y = Math.Clamp(mobPosition.Y + randomDistance, verticalRange.lo, verticalRange.hi);
+			mobInstance.GlobalPosition = mobPosition;
 			AddChild(mobInstance);
 			return true;
 		}
 		return false;
 	}
-	public override void OrchestrateLootGeneration(Vector2 coordinates) { }
+	public override void OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction) { }
 
 	public override void _Ready()
 	{
+		_structureRegistry = new Dictionary<string, PackedScene>
+		{
+			{ "structure_oak_tree",  GD.Load<PackedScene>("res://Resources/Structures/OakTreeStructure.tscn") },
+		};
+
 		string tilesetName = GlobalManagers.Instance.GetManager<TilesetManager>().BiomeTilesetLookup[Id];
 		var tileset = GlobalManagers.Instance.GetManager<TilesetManager>().GetResource(tilesetName);
 		if (tileset is not null)
@@ -46,145 +92,107 @@ public partial class PlainsBiome : Biome
 		) / 1.75;
 	}
 
-	private void GenerateSurface(ref ChunkArea areaToBeChunked, ref FastNoiseLite noiseFunction)
+	private void GenerateSurfaceGrass(ChunkArea area, FastNoiseLite noiseFunction)
 	{
-		var (yStart, yEnd) = FindBlockHeightBoundaries(ref areaToBeChunked, "block_grass");
-		GD.Print(yStart, yEnd);
+		var (yStart, yEnd) = FindBlockHeightBoundaries(area, "block_grass");
+		Block grass = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_grass");
 		for (int y = yStart; y < yEnd; y++)
 		{
-			for (int x = areaToBeChunked.UpperLeftCorner.X; x < areaToBeChunked.LowerRightCorner.X; x++)
+			for (int x = area.UpperLeftCorner.X; x < area.LowerRightCorner.X; x++)
 			{
 				// TODO: This can be probably cached
-				float surfaceNoise = noiseFunction.GetNoise1D(x);
-				int groundLevel = (int)((surfaceNoise + 1) * 30) + 25;
+				double noise1D = noiseFunction.GetNoise1D(x / 1.33f);
+				int groundLevel = (int)((noise1D + 1) * 15) + 30;
 				Vector2I currentCellPosition = new Vector2I(x, groundLevel);
 				// Check if cell is taken
 				if (GetCellSourceId(currentCellPosition) != -1)
 				{
 					continue;
 				}
-				Block grass = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_grass");
 				SetCell(currentCellPosition, 1, grass.TilesetCoordinates);
 			}
 		}
 	}
 
-	private void GenerateSolidGround(ref ChunkArea areaToBeChunked, ref FastNoiseLite noiseFunction)
+	private void GenerateUnderground(ChunkArea area, FastNoiseLite noiseFunction, string block_id,
+	bool useDepthFactor = false,
+	bool canReplaceBlock = false)
 	{
-		var (yStart, yEnd) = FindBlockHeightBoundaries(ref areaToBeChunked, "block_dirt");
-		// First we iterate through x, because we want to find the grass block and fill up with dirt
-		// to the end
-		for (int x = areaToBeChunked.UpperLeftCorner.X; x < areaToBeChunked.LowerRightCorner.X; x++)
+		// WARNING: block_dirt should have the widest boundaries, it defines the generation boundaries for the rest of the blocks
+		var (yStart, yEnd) = FindBlockHeightBoundaries(area, "block_dirt");
+		Block grass = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_grass");
+		Block block = GlobalManagers.Instance.GetManager<BlockManager>().GetResource(block_id);
+		for (int x = area.UpperLeftCorner.X; x < area.LowerRightCorner.X; x++)
 		{
+			// First we find the existing grass, after we find it, we can place blocks under
 			bool foundGrass = false;
 			for (int y = yStart; y < yEnd; y++)
 			{
 				Vector2I currentCellPosition = new(x, y);
 				Vector2I currentAtlasCoordinates = GetCellAtlasCoords(currentCellPosition);
-				Block dirt = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_dirt");
-				Block grass = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_grass");
+
 				if (currentAtlasCoordinates == grass.TilesetCoordinates)
 				{
 					foundGrass = true;
 					continue;
 				}
+
+				double noise2D = CompositeNoise(noiseFunction, x, y);
+				if (useDepthFactor)
+				{
+					float depthFactor = Mathf.Clamp((float)(y - yStart) / (float)yEnd, 0.0f, 1.0f);
+					noise2D *= depthFactor;
+				}
+
 				if (foundGrass)
 				{
-					if (GetCellSourceId(currentCellPosition) == -1)
+					if (block.CanSpawnAt(y, noise2D))
 					{
-						SetCell(currentCellPosition, 1, dirt.TilesetCoordinates);
+						if (canReplaceBlock)
+						{
+							SetCell(currentCellPosition, 1, block.TilesetCoordinates);
+						}
+						else if (currentAtlasCoordinates.X == -1 && currentAtlasCoordinates.Y == -1)
+						{
+							SetCell(currentCellPosition, 1, block.TilesetCoordinates);
+						}
+						continue;
 					}
 				}
 			}
 		}
 	}
 
-	private void GenerateUnderground(ref ChunkArea areaToBeChunked, ref FastNoiseLite noiseFunction)
+	private void GenerateOres(ChunkArea area, FastNoiseLite noiseFunction, string ore_id)
 	{
-		var (yStart, yEnd) = FindBlockHeightBoundaries(ref areaToBeChunked, "block_dirt_wall");
+		var (yStart, yEnd) = FindBlockHeightBoundaries(area, ore_id);
+		Block block = GlobalManagers.Instance.GetManager<BlockManager>().GetResource(ore_id);
 		for (int y = yStart; y < yEnd; y++)
 		{
-			for (int x = areaToBeChunked.UpperLeftCorner.X; x < areaToBeChunked.LowerRightCorner.X; x++)
+			for (int x = area.UpperLeftCorner.X; x < area.LowerRightCorner.X; x++)
 			{
 				Vector2I currentCellPosition = new Vector2I(x, y);
 				double noise2D = CompositeNoise(noiseFunction, x, y);
-				float depthFactor = Mathf.Clamp((float) (y - yStart) / (float) yEnd, 0.0f, 1.0f);
-				noise2D = Math.Pow(noise2D, 0.45) * depthFactor;
-				Block dirtWall = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_dirt_wall");
-				if (dirtWall.CanSpawnAt(y, noise2D))
+
+				if (block.CanSpawnAt(y, noise2D))
 				{
-					SetCell(currentCellPosition, 1, dirtWall.TilesetCoordinates);
+					SetCell(currentCellPosition, 1, block.TilesetCoordinates);
 				}
 			}
 		}
 	}
 
-	private void GenerateCoalOre(ref ChunkArea areaToBeChunked, ref FastNoiseLite noiseFunction)
+	public override void OrchestrateChunkGeneration(ChunkArea area, FastNoiseLite noiseFunction)
 	{
-		var (yStart, yEnd) = FindBlockHeightBoundaries(ref areaToBeChunked, "block_coal");
-		for (int y = yStart; y < yEnd; y++)
-		{
-			for (int x = areaToBeChunked.UpperLeftCorner.X; x < areaToBeChunked.LowerRightCorner.X; x++)
-			{
-				Vector2I currentCellPosition = new Vector2I(x, y);
-				double noise2D = CompositeNoise(noiseFunction, x, y);
-				Block coal = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_coal");
-				if (coal.CanSpawnAt(y, noise2D))
-				{
-					SetCell(currentCellPosition, 1, coal.TilesetCoordinates);
-				}
-			}
-		}
-	}
-
-	private void GenerateIronOre(ref ChunkArea areaToBeChunked, ref FastNoiseLite noiseFunction)
-	{
-		var (yStart, yEnd) = FindBlockHeightBoundaries(ref areaToBeChunked, "block_iron");
-		for (int y = yStart; y < yEnd; y++)
-		{
-			for (int x = areaToBeChunked.UpperLeftCorner.X; x < areaToBeChunked.LowerRightCorner.X; x++)
-			{
-				Vector2I currentCellPosition = new Vector2I(x, y);
-				double noise2D = CompositeNoise(noiseFunction, x, y);
-				Block iron = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_iron");
-				if (iron.CanSpawnAt(y, noise2D))
-				{
-					SetCell(currentCellPosition, 1, iron.TilesetCoordinates);
-				}
-			}
-		}
-	}
-
-	private void GenerateDiamondOre(ref ChunkArea areaToBeChunked, ref FastNoiseLite noiseFunction)
-	{
-		var (yStart, yEnd) = FindBlockHeightBoundaries(ref areaToBeChunked, "block_diamond");
-		for (int y = yStart; y < yEnd; y++)
-		{
-			for (int x = areaToBeChunked.UpperLeftCorner.X; x < areaToBeChunked.LowerRightCorner.X; x++)
-			{
-				Vector2I currentCellPosition = new Vector2I(x, y);
-				double noise2D = CompositeNoise(noiseFunction, x, y);
-				Block diamond = GlobalManagers.Instance.GetManager<BlockManager>().GetResource("block_diamond");
-				if (diamond.CanSpawnAt(y, noise2D))
-				{
-					SetCell(currentCellPosition, 1, diamond.TilesetCoordinates);
-				}
-			}
-		}
-	}
-
-	public override void OrchestrateChunkGeneration(Vector2 coordinates, int chunkSize, FastNoiseLite noiseFunction)
-	{
-		// This returns the Vector with width and height of viewport 
-		Vector2 viewportSize = GetViewport().GetVisibleRect().Size;
-		ChunkArea areaToBeChunked = new ChunkArea(ref coordinates, ref viewportSize, chunkSize);
-		// TODO: Enforce the process generation (if we swapped two functions the world would generate incorrectly)
-		GenerateSurface(ref areaToBeChunked, ref noiseFunction);
-		GenerateSolidGround(ref areaToBeChunked, ref noiseFunction);
-		GenerateUnderground(ref areaToBeChunked, ref noiseFunction);
-		GenerateCoalOre(ref areaToBeChunked, ref noiseFunction);
-		GenerateIronOre(ref areaToBeChunked, ref noiseFunction);
-		GenerateDiamondOre(ref areaToBeChunked, ref noiseFunction);
+		GenerateSurfaceGrass(area, noiseFunction);
+		GenerateUnderground(area, noiseFunction, "block_dirt");
+		GenerateUnderground(area, noiseFunction, "block_stone", canReplaceBlock: true);
+		GenerateUnderground(area, noiseFunction, "block_diorite", canReplaceBlock: true);
+		GenerateUnderground(area, noiseFunction, "block_dirt_wall", useDepthFactor: true, canReplaceBlock: true);
+		GenerateUnderground(area, noiseFunction, "block_bedrock", canReplaceBlock: true);
+		GenerateOres(area, noiseFunction, "block_coal");
+		GenerateOres(area, noiseFunction, "block_iron");
+		GenerateOres(area, noiseFunction, "block_diamond");
 	}
 
 	public override void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)

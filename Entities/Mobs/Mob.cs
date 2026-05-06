@@ -11,7 +11,8 @@ public interface IMobController
 	public bool IsMobAggroed();
 }
 
-[GlobalClass] public partial class Mob : Entity, IMobController
+[GlobalClass]
+public partial class Mob : Entity, IMobController
 {
 	public Player Target { get; set; }
 	[Export] public float MaxDistanceToPlayer { get; set; } = 500.0f;
@@ -28,7 +29,7 @@ public interface IMobController
 		Vector2 currentVelocity = Velocity;
 		if (!IsOnFloor())
 		{
-			currentVelocity.Y += 980 * (float) delta; 
+			currentVelocity.Y += 980 * (float)delta;
 		}
 		else if (IsOnFloor() && GD.Randf() < 0.02f)
 		{
@@ -46,11 +47,11 @@ public interface IMobController
 		return currentVelocity;
 	}
 
-    public override void _MouseEnter()
-    {
-        EntityGlobalValues.EntityTargetedByPlayer = this;
+	public override void _MouseEnter()
+	{
+		EntityGlobalValues.EntityTargetedByPlayer = this;
 		GD.Print($"Entered {this}");
-    }
+	}
 
 	public override void _MouseExit()
 	{
@@ -60,10 +61,21 @@ public interface IMobController
 			GD.Print($"Exited {this}");
 		}
 	}
-	
-	public Vector2 PhysicsProcessAggroed(double delta) 
+
+	public Vector2 PhysicsProcessAggroed(double delta)
 	{
-		return GlobalPosition.DirectionTo(Target.GlobalPosition) * CurrentSpeed;
+		Vector2 currentVelocity = Velocity;
+		if (!IsOnFloor())
+		{
+			currentVelocity.Y += 980 * (float)delta;
+			return currentVelocity;
+		}
+	
+		float directionX = Mathf.Sign(Target.GlobalPosition.X - GlobalPosition.X);
+		float directionY = Mathf.Sign(Target.GlobalPosition.Y - GlobalPosition.Y);
+		currentVelocity.X = directionX * CurrentSpeed;
+		currentVelocity.Y = directionY * CurrentSpeed;
+		return currentVelocity;
 	}
 
 	public bool IsMobAggroed()
@@ -90,7 +102,7 @@ public interface IMobController
 		if (IsMobAggroed())
 		{
 			Velocity = PhysicsProcessAggroed(delta);
-		} 
+		}
 		else
 		{
 			Velocity = PhysicsProcessNoAggroed(delta);
@@ -100,18 +112,18 @@ public interface IMobController
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
-	{ 
+	{
 		if (CurrentHealth < 0)
 		{
 			FreeEntity();
 		}
 	}
-	
+
 	public override void UpdateAnimation(double delta)
 	{
 		// right now no animations
 	}
-	
+
 	public override void FreeEntity()
 	{
 		Target.EntityAttacked -= OnBeingAttacked;

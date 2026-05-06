@@ -9,5 +9,6 @@ using Godot;
     [Export] public Vector2I TilesetCoordinates { get; set; }
     public int CurrentStackSize { get; set; }
     [Export] public CraftingInformation[] RequiredItems { get; set; }
+    [Export] public Stat[] Stats { get; set; }
     [Export] public string Id { get; set; }
 }

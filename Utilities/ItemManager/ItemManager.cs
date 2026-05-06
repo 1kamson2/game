@@ -151,4 +151,29 @@ public partial class ItemManager : ResourceManager<UsableItem>
         }
         return true;
     }
+    
+    /// <summary>
+    /// Applies the modifiers based on the provided field.
+    /// </summary>
+    /// <param name="baseFieldValue">Field that will be modified.</param>
+    /// <param name="statId">Id of the modifier.</param>
+    /// <returns>Returns a modified value based on the ModifierType</returns>
+    public double ApplyModifiersToField(double baseFieldValue, UsableItem usableItem, string statId)
+    {
+        var selectedStats = usableItem.Stats.Where(stat => stat.Id == statId);
+        double modified = 0;
+        foreach (Stat stat in selectedStats)
+        {
+            switch (stat.ModifierType)
+            {
+                case StatModifierType.Multiplier:
+                    modified += baseFieldValue * (1 + stat.Value);
+                    break;
+                case StatModifierType.Add:
+                    modified += stat.Value;
+                    break;
+            }
+        }
+        return modified;
+    }
 }

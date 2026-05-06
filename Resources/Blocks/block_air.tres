@@ -9,5 +9,5 @@ MaxStackSize = 64
 Name = "Air"
 IsBreakable = false
 NoiseBoundaries = Vector2(-0.2, 0.2)
-HeightBoundaries = Vector2(70, 255)
+HeightBoundaries = Vector2(-255, 255)
 TilesetCoordinates = Vector2i(-1, -1)

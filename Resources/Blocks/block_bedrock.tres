@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://yhwee8alsktg"]
+
+[ext_resource type="Script" uid="uid://cxliretlc4b7o" path="res://Utilities/BlockManager/Block.cs" id="1_7hah7"]
+
+[resource]
+script = ExtResource("1_7hah7")
+Id = "block_bedrock"
+MaxStackSize = -1
+Name = "Bedrock"
+IsBreakable = false
+NoiseBoundaries = Vector2(-1, 1)
+HeightBoundaries = Vector2(254, 255)
+TilesetCoordinates = Vector2i(1, 5)

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://dfdwq3ln4gyns"]
+
+[ext_resource type="Script" uid="uid://cxliretlc4b7o" path="res://Utilities/BlockManager/Block.cs" id="1_b2hel"]
+
+[resource]
+script = ExtResource("1_b2hel")
+Id = "block_oak_leaves"
+MaxStackSize = 64
+IsStackable = true
+Name = "Oak Leaves"
+NoiseBoundaries = Vector2(-0.2, 0.2)
+HeightBoundaries = Vector2(-255, 255)
+TilesetCoordinates = Vector2i(0, 15)
