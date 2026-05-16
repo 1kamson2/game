@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://c6u0lpbfnwlm3" path="res://Resources/icon.svg" id="1_0p8jp"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0p8jp"]
-size = Vector2(128, 128)
+size = Vector2(112, 112)
 
 [node name="Entity" type="CharacterBody2D" unique_id=1815607445]
 scale = Vector2(0.5, 0.5)

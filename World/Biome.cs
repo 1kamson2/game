@@ -1,4 +1,5 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 
@@ -8,6 +9,9 @@ using System.Collections.Generic;
 	// Define how big a biome will be
 	[Export] public Vector2I SpanningBoundaries { get; protected set; } = new(int.MinValue, int.MinValue);
 	protected Dictionary<string, PackedScene> _structureRegistry;
+	public List<PackedScene> MobPool { get; set; }
+	public List<Pot> ContainerPool { get; set; } = new List<Pot>();
+	static protected Random rndGenerator = new Random();
 	// Generate chunks base on the given coordinates. It will render chunks to fillup the entire viewport.
 	// Then renders the chunks in the up, right, down, left directions.
 	public abstract void OrchestrateChunkGeneration(ChunkArea area, FastNoiseLite noiseFunction);

@@ -151,6 +151,9 @@ public partial class ItemManager : ResourceManager<UsableItem>
         }
         return true;
     }
+
+    // FIXME: Random Generator should be passed here
+    public string GetRandomItemId() => Registry.Keys.ElementAt(Random.Shared.Next(Registry.Count));
     
     /// <summary>
     /// Applies the modifiers based on the provided field.

@@ -8,6 +8,7 @@ Id = "block_air"
 MaxStackSize = 64
 Name = "Air"
 IsBreakable = false
+IsReplaceable = true
 NoiseBoundaries = Vector2(-0.2, 0.2)
 HeightBoundaries = Vector2(-255, 255)
 TilesetCoordinates = Vector2i(-1, -1)

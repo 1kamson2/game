@@ -9,7 +9,7 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 	{
 		base._Ready();
 		AddToGroup("player");
-		Inventory = GetNode<Inventory>("Inventory");
+		Inventory = GetNode<Inventory>("UI/Inventory");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

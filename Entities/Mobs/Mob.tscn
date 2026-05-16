@@ -5,3 +5,8 @@
 
 [node name="Entity" unique_id=1815607445 instance=ExtResource("1_6m41h")]
 script = ExtResource("1_nelae")
+MaxDistanceToPlayer = 250.0
+SpawnChance = 1.0
+_baseSpeed = 125.0
+_baseDamage = 17.0
+_baseJumpForce = 275.0

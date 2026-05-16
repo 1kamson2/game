@@ -228,15 +228,12 @@ public partial class Inventory : HBoxContainer
             );
             Items[index].CurrentStackSize -= requiredItem.Amount;
         }
-        // TODO: Add checking if we actually can create new item.
         AddNewItem(recipe);
         UpdateRecipesState();
     }
 
     public void UpdateRecipesState()
     {
-        // TODO: Add signal emitting so there is no reason to call update everytime
-        // TODO: Recipes are added at the end of the container
         GlobalManagers.Instance.GetManager<ItemManager>().FindAllCraftableItems(this);
         Recipes.OrderBy(item => item.Id);
         for (int i = 0; i < _baseRecipeCapacity; i++)

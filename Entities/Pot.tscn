@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://ciwoibqavftad"]
+
+[ext_resource type="Script" uid="uid://b5g4s52tedh1d" path="res://Entities/Pot.cs" id="1_ervjq"]
+[ext_resource type="Texture2D" uid="uid://c6u0lpbfnwlm3" path="res://Resources/icon.svg" id="2_ervjq"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_p7q03"]
+
+[node name="Chest" type="Area2D" unique_id=1627579676]
+show_behind_parent = true
+light_mask = 31
+visibility_layer = 31
+z_index = 1000
+disable_mode = 2
+collision_layer = 15
+collision_mask = 15
+priority = 999
+script = ExtResource("1_ervjq")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=542306359]
+shape = SubResource("RectangleShape2D_p7q03")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=742583689]
+position = Vector2(-3.5762787e-07, 0.124999285)
+scale = Vector2(0.15625, 0.15820314)
+texture = ExtResource("2_ervjq")

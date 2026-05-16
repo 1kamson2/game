@@ -84,12 +84,12 @@ public partial class BlockManager : ResourceManager<Block>
         return block;
     }
 
-    public Block GetResourceFromCoordinates(ref Vector2I coordinates)
+    public Block GetResourceFromCoordinates(Vector2I atlasCoordinates)
     {
-        BlockIdLookup.TryGetValue(coordinates, out string id);
+        BlockIdLookup.TryGetValue(atlasCoordinates, out string id);
         if (string.IsNullOrEmpty(id))
         {
-            GD.PrintErr($"No entry for: `{coordinates}`");
+            GD.PrintErr($"No entry for: `{atlasCoordinates}`");
             return null;
         }
         return GetResource(id);

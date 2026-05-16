@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.ComponentModel;
 
 public interface IMobController
 {
@@ -11,38 +9,36 @@ public interface IMobController
 	public bool IsMobAggroed();
 }
 
+// TODO: Look into: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+/// <summary>
+/// Mob is a generic Mob class. It creates a generic mob. Other Mob classes should derive from this class.
+/// </summary>
 [GlobalClass]
 public partial class Mob : Entity, IMobController
 {
 	public Player Target { get; set; }
-	[Export] public float MaxDistanceToPlayer { get; set; } = 500.0f;
+	public Vector2 WanderingCoordinates { get; set; }
+	[Export] public float MaxDistanceToPlayer { get; set; }
+	[Export] public float SpawnChance { get; set; }
 
 	public override void _Ready()
 	{
 		base._Ready();
 		Target = GetTree().GetFirstNodeInGroup("player") as Player;
 		Target.EntityAttacked += OnBeingAttacked;
+		WanderingCoordinates = new(-50, 50);
 	}
 
-	public Vector2 PhysicsProcessNoAggroed(double delta)
+	public virtual Vector2 PhysicsProcessNoAggroed(double delta)
 	{
 		Vector2 currentVelocity = Velocity;
-		if (!IsOnFloor())
+		currentVelocity.Y = !IsOnFloor() ? currentVelocity.Y + 980 * (float)delta : currentVelocity.Y;
+		if (IsOnFloor())
 		{
-			currentVelocity.Y += 980 * (float)delta;
-		}
-		else if (IsOnFloor() && GD.Randf() < 0.02f)
-		{
-			currentVelocity.Y = -CurrentJumpForce;
-		}
-
-		if (GD.Randf() < 0.3f)
-		{
-			currentVelocity.X = (GD.Randf() * 2) * CurrentSpeed;
-		}
-		else
-		{
-			currentVelocity.X = -(GD.Randf() * 2) * CurrentSpeed;
+			// Wandering Logic
+			Vector2 direction = GlobalPosition.DirectionTo(WanderingCoordinates).Sign();
+			currentVelocity.X = direction.X * CurrentSpeed;
+			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
 		}
 		return currentVelocity;
 	}
@@ -62,28 +58,37 @@ public partial class Mob : Entity, IMobController
 		}
 	}
 
-	public Vector2 PhysicsProcessAggroed(double delta)
+	public virtual Vector2 PhysicsProcessAggroed(double delta)
 	{
+
 		Vector2 currentVelocity = Velocity;
-		if (!IsOnFloor())
+		currentVelocity.Y = !IsOnFloor() ? currentVelocity.Y + 980 * (float)delta : currentVelocity.Y;
+		if (IsOnFloor())
 		{
-			currentVelocity.Y += 980 * (float)delta;
-			return currentVelocity;
+			// Wandering Logic
+			Vector2 direction = GlobalPosition.DirectionTo(Target.GlobalPosition).Sign();
+			currentVelocity.X = direction.X * CurrentSpeed;
+			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
 		}
-	
-		float directionX = Mathf.Sign(Target.GlobalPosition.X - GlobalPosition.X);
-		float directionY = Mathf.Sign(Target.GlobalPosition.Y - GlobalPosition.Y);
-		currentVelocity.X = directionX * CurrentSpeed;
-		currentVelocity.Y = directionY * CurrentSpeed;
 		return currentVelocity;
 	}
 
-	public bool IsMobAggroed()
+	public virtual bool IsMobAggroed()
 	{
-		return GlobalPosition.DistanceTo(Target.GlobalPosition) < 300.0f;
+		return GlobalPosition.DistanceTo(Target.GlobalPosition) < MaxDistanceToPlayer;
 	}
 
-	public void OnBeingAttacked(float damageAmount, Entity target)
+	public virtual bool AchievedWanderingCoordinates()
+	{
+		return GlobalPosition.DistanceTo(WanderingCoordinates) < 100f;
+	}
+
+	public virtual Vector2 NewWanderingCoordinates()
+	{
+		return WanderingCoordinates + new Vector2(GD.RandRange(-50, 50), WanderingCoordinates.Y);
+	}
+
+	public virtual void OnBeingAttacked(float damageAmount, Entity target)
 	{
 		if (target != this)
 		{
@@ -92,7 +97,7 @@ public partial class Mob : Entity, IMobController
 		CurrentHealth -= damageAmount;
 	}
 
-	public void OnAttack(float damageAmount)
+	public virtual void OnAttack(float damageAmount)
 	{
 		return;
 	}
@@ -105,6 +110,7 @@ public partial class Mob : Entity, IMobController
 		}
 		else
 		{
+			WanderingCoordinates = AchievedWanderingCoordinates() ? NewWanderingCoordinates() : WanderingCoordinates;
 			Velocity = PhysicsProcessNoAggroed(delta);
 		}
 		MoveAndSlide();

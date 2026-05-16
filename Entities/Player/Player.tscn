@@ -10,8 +10,9 @@ z_index = 999
 disable_mode = 1
 safe_margin = 1.0
 script = ExtResource("1_oo13o")
+_baseSpeed = 150.0
 _baseDamage = 25.0
-_baseJumpForce = 250.0
+_baseJumpForce = 290.0
 metadata/_edit_group_ = true
 
 [node name="Camera2D" type="Camera2D" parent="." index="0" unique_id=578844198]
@@ -23,8 +24,16 @@ rotation_smoothing_enabled = true
 
 [node name="CollisionShape2D" parent="." index="2" unique_id=355218168 groups=["mobs", "player"]]
 
-[node name="Inventory" parent="." index="3" unique_id=137671803 instance=ExtResource("3_vweq0")]
-offset_left = -550.0
-offset_top = -300.0
-offset_right = -542.0
-offset_bottom = -292.0
+[node name="UI" type="CanvasLayer" parent="." index="3" unique_id=523804065]
+
+[node name="Inventory" parent="UI" index="0" unique_id=137671803 instance=ExtResource("3_vweq0")]
+light_mask = 1023
+visibility_layer = 1023
+z_index = 999
+z_as_relative = false
+clip_contents = true
+anchors_preset = 9
+anchor_bottom = 1.0
+offset_right = 132.0
+offset_bottom = -584.0
+grow_vertical = 2

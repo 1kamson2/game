@@ -7,6 +7,7 @@ using Godot;
     [Export] public bool IsStackable { get; set; }
     [Export] public string Name { get; set; }
     [Export] public bool IsBreakable { get; set; } = true;
+    [Export] public bool IsReplaceable { get; set; } = false;
     public int CurrentStackSize { get; set; }
     // The boundary is inclusive
     [Export] public Vector2 NoiseBoundaries { get; set; }
@@ -17,7 +18,6 @@ using Godot;
 
     public Block(ref Vector2 noiseBoundaries, ref Vector2 heightBoundaries, ref Vector2I atlasCoordinates)
     {
-        // TODO: Add checking of the parameters later.
         NoiseBoundaries = noiseBoundaries;
         HeightBoundaries = heightBoundaries;
         TilesetCoordinates = atlasCoordinates;

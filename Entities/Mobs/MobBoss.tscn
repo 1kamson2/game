@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://dx1awl4klurm5"]
+
+[ext_resource type="PackedScene" uid="uid://cswybgqsji74g" path="res://Entities/Mobs/Mob.tscn" id="1_7ycgj"]
+[ext_resource type="Script" uid="uid://duubg7x4c77c8" path="res://Entities/Mobs/MobBoss.cs" id="2_exm32"]
+
+[node name="Entity" unique_id=1815607445 instance=ExtResource("1_7ycgj")]
+script = ExtResource("2_exm32")
+SpawnChance = 0.01

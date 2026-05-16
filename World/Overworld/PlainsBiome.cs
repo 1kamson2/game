@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-// TODO: Trees render incorrectly.
 public partial class PlainsBiome : Biome
 {
 	public override void OrchestrateEventGeneration(ChunkArea area, FastNoiseLite noiseFunction) { }
@@ -25,7 +24,7 @@ public partial class PlainsBiome : Biome
 					Vector2I currentCellPosition = new(x, y);
 					Vector2I currentAtlasCoordinates = GetCellAtlasCoords(currentCellPosition);
 					if (currentAtlasCoordinates != grass.TilesetCoordinates) { continue; }
-					if (GD.Randf() > structure.SpawnChance) { continue; }
+					if (rndGenerator.NextDouble() > structure.SpawnChance) { continue; }
 					var mappedTilePositions = structure.TilesGlobalPositions(currentCellPosition);
 					for (int idx = 0; idx < structure.TilesPositions.Count(); idx++)
 					{
@@ -39,36 +38,128 @@ public partial class PlainsBiome : Biome
 
 	}
 
+	private void GenerateCaves(ChunkArea area)
+	{
+		IEnumerable<string> caveKeys = _structureRegistry.Keys.Where(k => k.Contains("cave"));
+		var horizontalRange = area.HorizontalRange();
+		var verticalRange = area.VerticalRange();
+		foreach (string caveKey in caveKeys)
+		{
+			Structure structure = _structureRegistry[caveKey].Instantiate<Structure>();
+			structure.Load();
+			if (rndGenerator.NextDouble() > structure.SpawnChance) { continue; }
+			var horizontalSpawnRange = structure.HorizontalSpawnRange;
+			var verticalSpawnRange = structure.VerticalSpawnRange;
+			int x = Mathf.Clamp(rndGenerator.Next(horizontalSpawnRange.lo, horizontalSpawnRange.hi), horizontalRange.lo, horizontalRange.hi);
+			int y = Mathf.Clamp(rndGenerator.Next(verticalSpawnRange.lo, verticalSpawnRange.hi), verticalRange.lo, verticalRange.hi);
+			var mappedTilePositions = structure.TilesGlobalPositions(new(x, y));
+			for (int idx = 0; idx < structure.TilesPositions.Count(); idx++)
+			{
+				SetCell(mappedTilePositions[idx], 1, structure.TileAtlasCoords[idx]);
+			}
+		}
+	}
+
+	private void GenerateDungeons(ChunkArea area)
+	{
+		IEnumerable<string> dungeonKeys = _structureRegistry.Keys.Where(k => k.Contains("dungeon"));
+		var horizontalRange = area.HorizontalRange();
+		var verticalRange = area.VerticalRange();
+		foreach (string dungeonKey in dungeonKeys)
+		{
+			Structure structure = _structureRegistry[dungeonKey].Instantiate<Structure>();
+			structure.Load();
+			if (rndGenerator.NextDouble() > structure.SpawnChance) { continue; }
+			var horizontalSpawnRange = structure.HorizontalSpawnRange;
+			var verticalSpawnRange = structure.VerticalSpawnRange;
+			int x = Mathf.Clamp(rndGenerator.Next(horizontalSpawnRange.lo, horizontalSpawnRange.hi), horizontalRange.lo, horizontalRange.hi);
+			int y = Mathf.Clamp(rndGenerator.Next(verticalSpawnRange.lo, verticalSpawnRange.hi), verticalRange.lo, verticalRange.hi);
+			var mappedTilePositions = structure.TilesGlobalPositions(new(x, y));
+			for (int idx = 0; idx < structure.TilesPositions.Count(); idx++)
+			{
+				SetCell(mappedTilePositions[idx], 1, structure.TileAtlasCoords[idx]);
+			}
+		}
+	}
+
+	private void GenerateMines(ChunkArea area)
+	{
+		IEnumerable<string> mineKeys = _structureRegistry.Keys.Where(k => k.Contains("mine"));
+		var horizontalRange = area.HorizontalRange();
+		var verticalRange = area.VerticalRange();
+		foreach (string mineKey in mineKeys)
+		{
+			Structure structure = _structureRegistry[mineKey].Instantiate<Structure>();
+			structure.Load();
+			if (rndGenerator.NextDouble() > structure.SpawnChance) { continue; }
+			var horizontalSpawnRange = structure.HorizontalSpawnRange;
+			var verticalSpawnRange = structure.VerticalSpawnRange;
+			int x = Mathf.Clamp(rndGenerator.Next(horizontalSpawnRange.lo, horizontalSpawnRange.hi), horizontalRange.lo, horizontalRange.hi);
+			int y = Mathf.Clamp(rndGenerator.Next(verticalSpawnRange.lo, verticalSpawnRange.hi), verticalRange.lo, verticalRange.hi);
+			var mappedTilePositions = structure.TilesGlobalPositions(new(x, y));
+			for (int idx = 0; idx < structure.TilesPositions.Count(); idx++)
+			{
+				SetCell(mappedTilePositions[idx], 1, structure.TileAtlasCoords[idx]);
+			}
+		}
+	}
 	public override void OrchestrateStructureGeneration(ChunkArea area, FastNoiseLite noiseFunction)
 	{
 		GenerateTreeStructures(area);
+		GenerateCaves(area);
+		GenerateDungeons(area);
+		GenerateMines(area);
 	}
 
 	public override bool OrchestrateMobGeneration(ChunkArea area, FastNoiseLite noiseFunction, Vector2 playerPosition)
 	{
-		// Spawn a mob
-		if (GD.Randf() <= 0.5)
-		{
-			Mob mobInstance = GD.Load<PackedScene>("res://Entities/Mobs/Mob.tscn").Instantiate<Mob>();
-			int randomDistance = GD.RandRange(-500, 500);
-			Vector2 mobPosition = playerPosition;
-			var horizontalRange = area.HorizontalRange();
-			var verticalRange = area.VerticalRange();
-			mobPosition.X = Math.Clamp(mobPosition.X + randomDistance, horizontalRange.lo, horizontalRange.hi);
-			mobPosition.Y = Math.Clamp(mobPosition.Y + randomDistance, verticalRange.lo, verticalRange.hi);
-			mobInstance.GlobalPosition = mobPosition;
-			AddChild(mobInstance);
-			return true;
-		}
-		return false;
+		int mobIndex = rndGenerator.Next(MobPool.Count);
+		// Try to spawn mob
+		Mob mobInstance = MobPool[mobIndex].Instantiate<Mob>();
+		if (rndGenerator.NextDouble() > mobInstance.SpawnChance) { return false; }
+		int randomDistance = rndGenerator.Next(-150, 150);
+		Vector2 mobPosition = playerPosition;
+		var horizontalRange = area.HorizontalRange();
+		var verticalRange = area.VerticalRange();
+		mobPosition.X = Math.Clamp(mobPosition.X + randomDistance, horizontalRange.lo, horizontalRange.hi);
+		mobPosition.Y = Math.Clamp(mobPosition.Y + randomDistance, verticalRange.lo, verticalRange.hi);
+		mobInstance.GlobalPosition = mobPosition;
+		AddChild(mobInstance);
+		return true;
 	}
-	public override void OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction) { }
+	public override void OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction)
+	{
+		PackedScene potScene = GD.Load<PackedScene>("res://Entities/Pot.tscn");
+		for (int i = 0; i < 50; i++)
+		{
+			Pot potInstance = potScene.Instantiate<Pot>();
+			Vector2 position = MapToLocal(new(rndGenerator.Next(-400, 400), rndGenerator.Next(-200, 200)));
+			potInstance.Position = position;
+			potInstance.StoredItem = GlobalManagers.Instance.GetManager<ItemManager>().GetRandomItemId();
+			potInstance.Amount = 1;
+			ContainerPool.Add(potInstance);
+			AddChild(potInstance);
+		}
+	}
 
 	public override void _Ready()
 	{
 		_structureRegistry = new Dictionary<string, PackedScene>
 		{
 			{ "structure_oak_tree",  GD.Load<PackedScene>("res://Resources/Structures/OakTreeStructure.tscn") },
+			{ "structure_big_cave",  GD.Load<PackedScene>("res://Resources/Structures/BigCaveStructure.tscn") },
+			{ "structure_dungeon",  GD.Load<PackedScene>("res://Resources/Structures/DungeonStructure.tscn") },
+			{ "structure_house",  GD.Load<PackedScene>("res://Resources/Structures/HouseStructure.tscn") },
+			{ "structure_large_cave",  GD.Load<PackedScene>("res://Resources/Structures/LargeCaveStructure.tscn") },
+			{ "structure_medium_cave",  GD.Load<PackedScene>("res://Resources/Structures/MediumCaveStructure.tscn") },
+			{ "structure_mine",  GD.Load<PackedScene>("res://Resources/Structures/MineStructure.tscn") },
+		};
+
+		MobPool = new List<PackedScene>()
+		{
+			GD.Load<PackedScene>("res://Entities/Mobs/Mob.tscn"),
+			GD.Load<PackedScene>("res://Entities/Mobs/MobBoss.tscn"),
+			GD.Load<PackedScene>("res://Entities/Mobs/MobStalker.tscn")
 		};
 
 		string tilesetName = GlobalManagers.Instance.GetManager<TilesetManager>().BiomeTilesetLookup[Id];
@@ -100,7 +191,6 @@ public partial class PlainsBiome : Biome
 		{
 			for (int x = area.UpperLeftCorner.X; x < area.LowerRightCorner.X; x++)
 			{
-				// TODO: This can be probably cached
 				double noise1D = noiseFunction.GetNoise1D(x / 1.33f);
 				int groundLevel = (int)((noise1D + 1) * 15) + 30;
 				Vector2I currentCellPosition = new Vector2I(x, groundLevel);
@@ -198,7 +288,7 @@ public partial class PlainsBiome : Biome
 	public override void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)
 	{
 		Vector2I atlasCoords = GetCellAtlasCoords(mouseCoordinates);
-		Block block = GlobalManagers.Instance.GetManager<BlockManager>().GetResourceFromCoordinates(ref atlasCoords);
+		Block block = GlobalManagers.Instance.GetManager<BlockManager>().GetResourceFromCoordinates(atlasCoords);
 		if (!block.IsBreakable || block.Id == "block_air")
 		{
 			return;
@@ -210,8 +300,10 @@ public partial class PlainsBiome : Biome
 
 	public override void TryPlaceBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)
 	{
-		// This cell is occupied
-		if (GetCellSourceId(mouseCoordinates) != -1)
+		Vector2I atlasCoords = GetCellAtlasCoords(mouseCoordinates);
+		Block blockOccupyingCell = GlobalManagers.Instance.GetManager<BlockManager>().GetResourceFromCoordinates(atlasCoords);
+
+		if (!blockOccupyingCell.IsReplaceable)
 		{
 			return;
 		}
