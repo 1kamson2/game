@@ -1,0 +1,47 @@
+[gd_scene format=3 uid="uid://ht3p5iot54lb"]
+
+[ext_resource type="Script" uid="uid://ipm7ag05lkko" path="res://Entities/Player/Stats/Stats.cs" id="1_0aiwj"]
+
+[node name="Stats" type="PanelContainer" unique_id=134659023]
+offset_right = 96.0
+offset_bottom = 77.0
+script = ExtResource("1_0aiwj")
+
+[node name="MC" type="MarginContainer" parent="." unique_id=1382701459]
+layout_mode = 2
+
+[node name="Container" type="VBoxContainer" parent="MC" unique_id=1346529271]
+layout_mode = 2
+
+[node name="Health" type="HBoxContainer" parent="MC/Container" unique_id=1825152048]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MC/Container/Health" unique_id=1301616404]
+layout_mode = 2
+text = "HP: "
+
+[node name="Value" type="Label" parent="MC/Container/Health" unique_id=1146720008]
+layout_mode = 2
+
+[node name="Speed" type="HBoxContainer" parent="MC/Container" unique_id=438640499]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MC/Container/Speed" unique_id=1477333329]
+layout_mode = 2
+text = "SPD:"
+
+[node name="Value" type="Label" parent="MC/Container/Speed" unique_id=650570435]
+layout_mode = 2
+
+[node name="Damage" type="HBoxContainer" parent="MC/Container" unique_id=2063029856]
+layout_mode = 2
+alignment = 1
+
+[node name="Label" type="Label" parent="MC/Container/Damage" unique_id=666128698]
+layout_mode = 2
+text = "DMG:"
+
+[node name="Value" type="Label" parent="MC/Container/Damage" unique_id=1874110296]
+layout_mode = 2

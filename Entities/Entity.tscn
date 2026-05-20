@@ -1,9 +1,15 @@
 [gd_scene format=3 uid="uid://hrodjmoax5xs"]
 
-[ext_resource type="Texture2D" uid="uid://c6u0lpbfnwlm3" path="res://Resources/icon.svg" id="1_0p8jp"]
-
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0p8jp"]
 size = Vector2(112, 112)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_0p8jp"]
+animations = [{
+"frames": [],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}]
 
 [node name="Entity" type="CharacterBody2D" unique_id=1815607445]
 scale = Vector2(0.5, 0.5)
@@ -15,11 +21,11 @@ platform_floor_layers = 4294967041
 platform_wall_layers = 1
 safe_margin = 7.191
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2014235241]
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("1_0p8jp")
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=355218168]
 scale = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_0p8jp")
 debug_color = Color(1, 0, 0, 0.41960785)
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1297269675]
+sprite_frames = SubResource("SpriteFrames_0p8jp")
+animation = &"idle"

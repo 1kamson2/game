@@ -1,6 +1,17 @@
 using Godot;
 using System;
 
+public enum EntityState
+{
+	Attacking,
+	Idling,
+	Mining,
+	Placing,
+	Running,
+	Jumping,
+	FallingDown,
+}
+
 /// <summary>
 /// EntityGlobalValues are used to define the global state of entity variables
 /// </summary>
@@ -36,6 +47,14 @@ public abstract partial class Entity : CharacterBody2D
 	[Signal] public delegate void BlockDestroyedEventHandler(int x, int y);
 	[Signal] public delegate void BlockPlacedEventHandler(int x, int y);
 	[Signal] public delegate void EntityAttackedEventHandler(float damageAmount, Entity target);
+	protected AnimatedSprite2D EntityAnimation { get; set; }
+	protected EntityState _currentEntityState = EntityState.Idling;
+	protected virtual EntityState CurrentEntityState 
+	{ 
+		get => _currentEntityState; 
+		// TODO: Work out all the animation cases
+		set => _currentEntityState = CheckIfAnimationLocked() ? _currentEntityState : value; 
+	}
 	/// <summary>
 	/// _baseHealth defines the default HP value for entity. Other stats such as buffs/nerfs should be evaluated from this value.
 	/// </summary>
@@ -80,8 +99,15 @@ public abstract partial class Entity : CharacterBody2D
 		CurrentSpeed = _baseSpeed;
 		CurrentDamage = _baseDamage;
 		CurrentJumpForce = _baseJumpForce;
+		EntityAnimation = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
     }
 	
 	public abstract void UpdateAnimation(double delta);
+	
+	/// <summary>
+	/// Check if the current animation CAN'T be interrupted, e.g.: breaking blocks, placing blocks, attacking, etc.
+	/// </summary>
+	/// <returns>True if it CAN'T be interrupted, otherwise false.</returns>
+	public abstract bool CheckIfAnimationLocked();
 	public abstract void FreeEntity();
 }

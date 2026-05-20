@@ -7,8 +7,6 @@ public static class ContainerGlobalValues
 	public static Pot LastOpenedContainer { get; set; } = null;
 }
 
-
-
 public partial class Pot : Area2D
 {
 	[Signal] public delegate void ContainerLootedEventHandler(string loot_id, int amount);

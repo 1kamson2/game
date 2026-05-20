@@ -309,7 +309,7 @@ public partial class PlainsBiome : Biome
 		}
 
 		// Can return something already
-		string blockId = playersInventory.UseCurrentItem();
+		string blockId = playersInventory.UseCurrentBlock();
 		if (blockId is null)
 		{
 			return;

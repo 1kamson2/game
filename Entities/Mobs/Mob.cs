@@ -26,6 +26,7 @@ public partial class Mob : Entity, IMobController
 		base._Ready();
 		Target = GetTree().GetFirstNodeInGroup("player") as Player;
 		Target.EntityAttacked += OnBeingAttacked;
+		EntityAttacked += Target.OnBeingAttacked;
 		WanderingCoordinates = new(-50, 50);
 	}
 
@@ -39,6 +40,7 @@ public partial class Mob : Entity, IMobController
 			Vector2 direction = GlobalPosition.DirectionTo(WanderingCoordinates).Sign();
 			currentVelocity.X = direction.X * CurrentSpeed;
 			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
+			CurrentEntityState = EntityState.Running;
 		}
 		return currentVelocity;
 	}
@@ -69,6 +71,7 @@ public partial class Mob : Entity, IMobController
 			Vector2 direction = GlobalPosition.DirectionTo(Target.GlobalPosition).Sign();
 			currentVelocity.X = direction.X * CurrentSpeed;
 			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
+			CurrentEntityState = EntityState.Running;
 		}
 		return currentVelocity;
 	}
@@ -99,7 +102,7 @@ public partial class Mob : Entity, IMobController
 
 	public virtual void OnAttack(float damageAmount)
 	{
-		return;
+		EmitSignal(SignalName.EntityAttacked, damageAmount, Target);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -107,6 +110,10 @@ public partial class Mob : Entity, IMobController
 		if (IsMobAggroed())
 		{
 			Velocity = PhysicsProcessAggroed(delta);
+			if (Target.GlobalPosition.DistanceTo(this.GlobalPosition) < 50)
+			{
+				OnAttack(25);
+			}
 		}
 		else
 		{
@@ -125,9 +132,26 @@ public partial class Mob : Entity, IMobController
 		}
 	}
 
-	public override void UpdateAnimation(double delta)
+    public override void UpdateAnimation(double delta)
+    {
+        switch (CurrentEntityState)
+		{
+			case EntityState.Running:
+			EntityAnimation.Play("run");
+			break;
+			case EntityState.Idling:
+			EntityAnimation.Play("idle");
+			break;
+			case EntityState.Attacking:
+			EntityAnimation.Play("attack");
+			break;
+		}
+    }
+
+
+	public override bool CheckIfAnimationLocked()
 	{
-		// right now no animations
+		return false;
 	}
 
 	public override void FreeEntity()

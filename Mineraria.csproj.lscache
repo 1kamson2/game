@@ -64,6 +64,7 @@ Entities/
  Player/
   Inventory/Inventory.cs
   Player.cs
+  Stats/Stats.cs
  Pot.cs
 Resources/Structures/
  BigCaveStructure.cs

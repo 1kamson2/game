@@ -80,7 +80,6 @@ public partial class Inventory : HBoxContainer
 
             // 2. Create Icon
             TextureRect icon = new TextureRect();
-            icon.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
             icon.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
             icon.SetAnchorsPreset(Control.LayoutPreset.FullRect);
 
@@ -105,17 +104,30 @@ public partial class Inventory : HBoxContainer
         }
     }
 
-    public string UseCurrentItem()
+    public UsableItem UseCurrentItem()
     {
-        if (CurrentItem == null || CurrentItem.IsEmpty())
+        if (CurrentItem == null || CurrentItem.IsEmpty() || CurrentItem is Block)
+        {
+            GD.Print("FAIL");
+            return null;
+        }
+        UsableItem item = (UsableItem) CurrentItem;
+        CurrentItem.CurrentStackSize--;
+        UpdateInventoryState();
+        return item;
+    }
+
+    public string UseCurrentBlock()
+    {
+        if (CurrentItem == null || CurrentItem.IsEmpty() || CurrentItem is UsableItem)
         {
             return null;
         }
 
-        var blockId = CurrentItem.Id;
+        var itemId = CurrentItem.Id;
         CurrentItem.CurrentStackSize--;
         UpdateInventoryState();
-        return blockId;
+        return itemId;
     }
 
     public void AddNewBlock(Block block)
@@ -138,7 +150,7 @@ public partial class Inventory : HBoxContainer
         // Put into already existing container
         if (itemIndex != -1)
         {
-            Items[itemIndex] = (IInventoryContainer)block.Duplicate();
+            Items[itemIndex] = (IInventoryContainer)block;
             Items[itemIndex].CurrentStackSize = 1;
             string biomeId = GlobalManagers.Instance.GetManager<WorldManager>().CurrentBiome.Id;
             _inventoryIcons[itemIndex].Texture = GlobalManagers.Instance.GetManager<TilesetManager>().GetTileTexture(biomeId, 1, block.TilesetCoordinates);
@@ -168,7 +180,7 @@ public partial class Inventory : HBoxContainer
         // Put into already existing container
         if (itemIndex != -1)
         {
-            Items[itemIndex] = (IInventoryContainer)newItem.Duplicate();
+            Items[itemIndex] = (IInventoryContainer)newItem;
             Items[itemIndex].CurrentStackSize = 1;
             string biomeId = GlobalManagers.Instance.GetManager<WorldManager>().CurrentBiome.Id;
             _inventoryIcons[itemIndex].Texture = GlobalManagers.Instance.GetManager<TilesetManager>().GetTileTexture(biomeId, 1, newItem.TilesetCoordinates);

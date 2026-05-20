@@ -1,1 +1,3 @@
-Tileset: https://piiixl.itch.io/textures
+Tileset (Added some tiles myself): https://piiixl.itch.io/textures
+Knight Character: https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character
+Mobs and UI: https://pixelfrog-assets.itch.io/tiny-swords

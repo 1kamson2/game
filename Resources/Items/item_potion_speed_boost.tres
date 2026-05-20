@@ -10,12 +10,11 @@ Id = "block_dirt"
 Amount = 8
 metadata/_custom_type_script = "uid://dj8t1mvo1mp12"
 
-[sub_resource type="Resource" id="Resource_2gicb"]
+[sub_resource type="Resource" id="Resource_5myj1"]
 script = ExtResource("2_kjdm4")
-metadata/_custom_type_script = "uid://b0wxhg1mslhgi"
-
-[sub_resource type="Resource" id="Resource_u31ek"]
-script = ExtResource("2_kjdm4")
+Id = "speed"
+Value = 100.0
+ModifierType = 1
 metadata/_custom_type_script = "uid://b0wxhg1mslhgi"
 
 [resource]
@@ -25,5 +24,5 @@ Name = "Speed Potion"
 IsStackable = true
 TilesetCoordinates = Vector2i(28, 24)
 RequiredItems = Array[Object]([SubResource("Resource_t8f6y")])
-Stats = Array[Object]([SubResource("Resource_2gicb"), SubResource("Resource_u31ek")])
+Stats = Array[Object]([SubResource("Resource_5myj1")])
 Id = "item_potion_speed_boost"
