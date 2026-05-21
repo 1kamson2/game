@@ -5,6 +5,8 @@ using System.Linq;
 
 public partial class Inventory : HBoxContainer
 {
+    [Signal] public delegate void InventoryChangedEventHandler();
+    [Signal] public delegate void RecipesChangedEventHandler();
     private static int _baseInventoryCapacity = 60;
     private static int _baseRecipeCapacity = 128;
     private int _currentInventoryCapacity = _baseInventoryCapacity;
@@ -30,6 +32,8 @@ public partial class Inventory : HBoxContainer
     {
         _inventoryGrid = GetNode<GridContainer>("Items/Grid");
         _recipeGrid = GetNode<GridContainer>("Recipes/ScrollContainer/Grid");
+        InventoryChanged += OnInventoryStateChanged;
+        RecipesChanged += OnRecipesStateChanged;
         InitializeInventorySlots();
         InitializeRecipeSlots();
     }
@@ -104,63 +108,20 @@ public partial class Inventory : HBoxContainer
         }
     }
 
-    public UsableItem UseCurrentItem()
+    public T UseCurrentItemAs<T>() where T : IRegistrable, IInventoryContainer
     {
-        if (CurrentItem == null || CurrentItem.IsEmpty() || CurrentItem is Block)
+        if (CurrentItem is null || CurrentItem.IsEmpty() || CurrentItem is not T)
         {
-            GD.Print("FAIL");
-            return null;
+            return default;
         }
-        UsableItem item = (UsableItem) CurrentItem;
+        T item = (T)CurrentItem;
         CurrentItem.CurrentStackSize--;
-        UpdateInventoryState();
+        EmitSignal(SignalName.InventoryChanged);
+        EmitSignal(SignalName.RecipesChanged);
         return item;
     }
 
-    public string UseCurrentBlock()
-    {
-        if (CurrentItem == null || CurrentItem.IsEmpty() || CurrentItem is UsableItem)
-        {
-            return null;
-        }
-
-        var itemId = CurrentItem.Id;
-        CurrentItem.CurrentStackSize--;
-        UpdateInventoryState();
-        return itemId;
-    }
-
-    public void AddNewBlock(Block block)
-    {
-        // Check if container already exists
-        int itemIndex = -1;
-        itemIndex = Items.FindIndex(item =>
-            item is not null &&
-            item.Name == block.Name &&
-            item.CanBeStacked()
-        );
-        if (itemIndex != -1)
-        {
-            Items[itemIndex].CurrentStackSize++;
-            UpdateInventoryState();
-            return;
-        }
-
-        itemIndex = Items.FindIndex(item => item is null);
-        // Put into already existing container
-        if (itemIndex != -1)
-        {
-            Items[itemIndex] = (IInventoryContainer)block;
-            Items[itemIndex].CurrentStackSize = 1;
-            string biomeId = GlobalManagers.Instance.GetManager<WorldManager>().CurrentBiome.Id;
-            _inventoryIcons[itemIndex].Texture = GlobalManagers.Instance.GetManager<TilesetManager>().GetTileTexture(biomeId, 1, block.TilesetCoordinates);
-            _selectedInventorySlot = _selectedInventorySlot == -1 ? itemIndex : _selectedInventorySlot;
-            UpdateInventoryState();
-            return;
-        }
-    }
-
-    public void AddNewItem(UsableItem newItem)
+    public void AddNewItem<T>(T newItem) where T : IRegistrable, IInventoryContainer
     {
         // Check if container already exists
         int itemIndex = -1;
@@ -172,7 +133,8 @@ public partial class Inventory : HBoxContainer
         if (itemIndex != -1)
         {
             Items[itemIndex].CurrentStackSize++;
-            UpdateInventoryState();
+            EmitSignal(SignalName.InventoryChanged);
+            EmitSignal(SignalName.RecipesChanged);
             return;
         }
 
@@ -185,12 +147,13 @@ public partial class Inventory : HBoxContainer
             string biomeId = GlobalManagers.Instance.GetManager<WorldManager>().CurrentBiome.Id;
             _inventoryIcons[itemIndex].Texture = GlobalManagers.Instance.GetManager<TilesetManager>().GetTileTexture(biomeId, 1, newItem.TilesetCoordinates);
             _selectedInventorySlot = _selectedInventorySlot == -1 ? itemIndex : _selectedInventorySlot;
-            UpdateInventoryState();
+            EmitSignal(SignalName.InventoryChanged);
+            EmitSignal(SignalName.RecipesChanged);
             return;
         }
     }
 
-    private void UpdateInventoryState()
+    private void OnInventoryStateChanged()
     {
         for (int i = 0; i < _currentInventoryCapacity; i++)
         {
@@ -212,26 +175,33 @@ public partial class Inventory : HBoxContainer
     {
         if (@event is InputEventMouseButton mouseBtn && mouseBtn.Pressed)
         {
-            GD.Print(index);
-            if (mouseBtn.ButtonIndex == MouseButton.Left)
+            switch (mouseBtn.ButtonIndex)
             {
-                if (index >= _baseInventoryCapacity)
-                {
-                    _selectedRecipeSlot = index;
-                    CraftNewItem();
-                }
-                else
-                {
-                    _selectedInventorySlot = index;
-                }
+                case MouseButton.Left:
+                    if (index >= _baseInventoryCapacity)
+                    {
+                        _selectedRecipeSlot = index;
+                        CraftNewItem();
+                    }
+                    else
+                    {
+                        _selectedInventorySlot = index;
+                    }
+                    break;
             }
         }
     }
 
     public void CraftNewItem()
     {
-        UsableItem recipe = Recipes[_selectedRecipeSlot - _baseInventoryCapacity];
+        int potentialIndex = _selectedRecipeSlot - _baseInventoryCapacity;
+        // Don't go out of bounds
+        if (potentialIndex >= Recipes.Count)
+        {
+            return;
+        }
 
+        UsableItem recipe = Recipes[potentialIndex];
         foreach (var requiredItem in recipe.RequiredItems)
         {
             int index = Items.FindIndex(item =>
@@ -241,20 +211,26 @@ public partial class Inventory : HBoxContainer
             Items[index].CurrentStackSize -= requiredItem.Amount;
         }
         AddNewItem(recipe);
-        UpdateRecipesState();
+        EmitSignal(SignalName.RecipesChanged);
     }
 
-    public void UpdateRecipesState()
+    private void ClearRecipes()
     {
-        GlobalManagers.Instance.GetManager<ItemManager>().FindAllCraftableItems(this);
-        Recipes.OrderBy(item => item.Id);
-        for (int i = 0; i < _baseRecipeCapacity; i++)
+        for (int i = 0; i < Recipes.Capacity; ++i)
         {
-            if (Recipes[i] is null)
-            {
-                continue;
-            }
-            GD.Print($"This is craftable {Recipes[i].Id}");
+            _recipeIcons[i].Texture = null;
+            _recipeLabels[i].Text = null;
+        }
+    }
+
+    private void OnRecipesStateChanged()
+    {
+        ClearRecipes();
+        Recipes = GlobalManagers.Instance.GetManager<ItemManager>().FindAllCraftableItems(Recipes, Items);
+        Recipes.OrderBy(recipe => recipe.Id);
+        for (int i = 0; i < Recipes.Count; ++i)
+        {
+            GD.Print($"`{Recipes[i].Id}` can be crafted.");
             string biomeId = GlobalManagers.Instance.GetManager<WorldManager>().CurrentBiome.Id;
             _recipeIcons[i].Texture = GlobalManagers.Instance.GetManager<TilesetManager>().GetTileTexture(biomeId, 1, Recipes[i].TilesetCoordinates);
             _recipeLabels[i].Text = Recipes[i].Name;

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 
@@ -5,6 +6,7 @@ public partial class WorldManager : ResourceManager<Biome>
 {
 	private Player _player;
 	private Timer _mobSpawnTimer;
+	private Timer _mobAttackTimer;
 	// public Dictionary<BiomeNames, PackedScene> Biomes { get; private set; }
 	public Biome CurrentBiome { get; set; }
 	// Define how big chunk is, the chunk will be of size ChunkSize x ChunkSize
@@ -21,6 +23,7 @@ public partial class WorldManager : ResourceManager<Biome>
 	[Export] public FastNoiseLite.NoiseTypeEnum NoiseFunctionNoiseType { get; set; } = FastNoiseLite.NoiseTypeEnum.Perlin;
 	// Define noise function, used for chunk generation
 	[Export] public FastNoiseLite NoiseFunction { get; set; } = new FastNoiseLite();
+	[Export] private int _maxMobCount = 25;
 	public Godot.Vector2 ViewportSize { get; set; }
 	public ChunkArea CurrentArea { get; set; }
 	public void ScheduleChunkUnload() { }
@@ -32,14 +35,27 @@ public partial class WorldManager : ResourceManager<Biome>
 		CurrentBiome.OrchestrateStructureGeneration(CurrentArea, NoiseFunction);
 		ScheduleLootGeneration();
 	}
-	public void ScheduleMobGeneration() { }
+
+	public void ScheduleMobGeneration()
+	{
+		if (EntityGlobalValues.CurrentMobCount > _maxMobCount)
+		{
+			GD.Print($"Mob cannot be spawned it will exceed the threshold: {_maxMobCount} mobs spawned.");
+		}
+		Mob mobSpawned = CurrentBiome.OrchestrateMobGeneration(CurrentArea, NoiseFunction, _player.GlobalPosition);
+		if (mobSpawned is null)
+		{
+			return;
+		}
+		_mobAttackTimer.Timeout += mobSpawned.OnAttack;
+	}
 	public void ScheduleEventGeneration() { }
 	public void ScheduleLootGeneration()
 	{
-		CurrentBiome.OrchestrateLootGeneration(CurrentArea, NoiseFunction);
-		foreach (var container in CurrentBiome.ContainerPool)
+		List<Pot> potRefs = CurrentBiome.OrchestrateLootGeneration(CurrentArea, NoiseFunction);
+		foreach (var pot in potRefs)
 		{
-			container.ContainerLooted += OnContainerLooted;
+			pot.ContainerLooted += OnContainerLooted;
 		}
 	}
 
@@ -54,7 +70,6 @@ public partial class WorldManager : ResourceManager<Biome>
 		if (IsCursorInValidRange())
 		{
 			CurrentBiome.TryDestroyBlock(mappedCoordinates, ref _player.Inventory);
-			_player.Inventory.UpdateRecipesState();
 		}
 	}
 
@@ -64,7 +79,6 @@ public partial class WorldManager : ResourceManager<Biome>
 		if (IsCursorInValidRange())
 		{
 			CurrentBiome.TryPlaceBlock(mappedCoordinates, ref _player.Inventory);
-			_player.Inventory.UpdateRecipesState();
 		}
 	}
 
@@ -138,7 +152,10 @@ public partial class WorldManager : ResourceManager<Biome>
 
 		_mobSpawnTimer = GetNode<Timer>("../MobSpawnTimer/Timer");
 		_mobSpawnTimer.Start();
-		_mobSpawnTimer.Timeout += OnMobSpawnTimeout;
+		_mobSpawnTimer.Timeout += ScheduleMobGeneration;
+
+		_mobAttackTimer = GetNode<Timer>("../MobAttackTimer/Timer");
+		_mobAttackTimer.Start();
 		// Initialize function parameters and instantiate biomes 
 		NoiseFunction.Frequency = NoiseFunctionFrequency;
 		NoiseFunction.NoiseType = NoiseFunctionNoiseType;
@@ -164,28 +181,21 @@ public partial class WorldManager : ResourceManager<Biome>
 		}
 	}
 
-	private void OnMobSpawnTimeout()
+	private bool CanContainerBeLooted()
 	{
-		bool mobSpawned = CurrentBiome.OrchestrateMobGeneration(CurrentArea, NoiseFunction, _player.GlobalPosition);
-	}
-
-	private bool CanContainerBeLooted(int potIndex)
-	{
-		return potIndex != -1 && CurrentBiome.ContainerPool[potIndex].GlobalPosition.DistanceSquaredTo(_player.GlobalPosition) <= 300;
+		return ContainerGlobalValues.LastContainerInteraction.GlobalPosition.DistanceTo(_player.GlobalPosition) <= 60;
 	}
 	private void OnContainerLooted(string loot_id, int amount)
 	{
-		int potIndex = CurrentBiome.ContainerPool.FindIndex(container => container is not null && ContainerGlobalValues.LastOpenedContainer == container);
-		if (!CanContainerBeLooted(potIndex)) { return; }
+		if (!CanContainerBeLooted()) { return; }
 		UsableItem item = GlobalManagers.Instance.GetManager<ItemManager>().GetResource(loot_id);
-		CurrentBiome.ContainerPool[potIndex].QueueFree();
-		// FIXME: Can be done with group (e.g.: lootable)
-		CurrentBiome.ContainerPool.RemoveAt(potIndex);
-		ContainerGlobalValues.LastOpenedContainer = null;
+		ContainerGlobalValues.LastContainerInteraction.QueueFree();
+		ContainerGlobalValues.LastContainerInteraction = null;
 		_player.Inventory.AddNewItem(item);
 	}
 
 	public override void _Process(double delta)
 	{
+
 	}
 }

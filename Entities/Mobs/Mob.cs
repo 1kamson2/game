@@ -9,7 +9,7 @@ public interface IMobController
 	public bool IsMobAggroed();
 }
 
-// TODO: Look into: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+// INFO: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
 /// <summary>
 /// Mob is a generic Mob class. It creates a generic mob. Other Mob classes should derive from this class.
 /// </summary>
@@ -27,7 +27,9 @@ public partial class Mob : Entity, IMobController
 		Target = GetTree().GetFirstNodeInGroup("player") as Player;
 		Target.EntityAttacked += OnBeingAttacked;
 		EntityAttacked += Target.OnBeingAttacked;
+		Death += FreeEntity;
 		WanderingCoordinates = new(-50, 50);
+		EntityGlobalValues.CurrentMobCount++;
 	}
 
 	public virtual Vector2 PhysicsProcessNoAggroed(double delta)
@@ -98,11 +100,18 @@ public partial class Mob : Entity, IMobController
 			return;
 		}
 		CurrentHealth -= damageAmount;
+		if (CurrentHealth <= 0)
+		{
+			EmitSignal(SignalName.Death);
+		}
 	}
 
-	public virtual void OnAttack(float damageAmount)
+	public virtual void OnAttack()
 	{
-		EmitSignal(SignalName.EntityAttacked, damageAmount, Target);
+		if (Target.GlobalPosition.DistanceTo(this.GlobalPosition) < 50)
+		{
+			EmitSignal(SignalName.EntityAttacked, CurrentDamage, Target);
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -110,10 +119,6 @@ public partial class Mob : Entity, IMobController
 		if (IsMobAggroed())
 		{
 			Velocity = PhysicsProcessAggroed(delta);
-			if (Target.GlobalPosition.DistanceTo(this.GlobalPosition) < 50)
-			{
-				OnAttack(25);
-			}
 		}
 		else
 		{
@@ -126,27 +131,23 @@ public partial class Mob : Entity, IMobController
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (CurrentHealth < 0)
-		{
-			FreeEntity();
-		}
 	}
 
-    public override void UpdateAnimation(double delta)
-    {
-        switch (CurrentEntityState)
+	public override void UpdateAnimation(double delta)
+	{
+		switch (CurrentEntityState)
 		{
 			case EntityState.Running:
-			EntityAnimation.Play("run");
-			break;
+				EntityAnimation.Play("run");
+				break;
 			case EntityState.Idling:
-			EntityAnimation.Play("idle");
-			break;
+				EntityAnimation.Play("idle");
+				break;
 			case EntityState.Attacking:
-			EntityAnimation.Play("attack");
-			break;
+				EntityAnimation.Play("attack");
+				break;
 		}
-    }
+	}
 
 
 	public override bool CheckIfAnimationLocked()
@@ -157,7 +158,9 @@ public partial class Mob : Entity, IMobController
 	public override void FreeEntity()
 	{
 		Target.EntityAttacked -= OnBeingAttacked;
+		Death -= FreeEntity;
 		EntityGlobalValues.FreeEntityTargetedByPlayer();
+		EntityGlobalValues.CurrentMobCount--;
 		QueueFree();
 	}
 }

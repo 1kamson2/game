@@ -2,8 +2,11 @@
 
 [ext_resource type="Script" uid="uid://c1l8xnqwye5r2" path="res://Utilities/GlobalManagers.cs" id="1_dnmhq"]
 [ext_resource type="PackedScene" uid="uid://c0aqxwm0v3jff" path="res://World/MobSpawnTimer.tscn" id="2_xx5b1"]
+[ext_resource type="PackedScene" uid="uid://b413p4yns0ak6" path="res://World/MobAttackTimer.tscn" id="3_shav1"]
 
 [node name="GlobalManagers" type="Node2D" unique_id=287978930]
 script = ExtResource("1_dnmhq")
 
 [node name="MobSpawnTimer" parent="." unique_id=1310459953 instance=ExtResource("2_xx5b1")]
+
+[node name="MobAttackTimer" parent="." unique_id=991207997 instance=ExtResource("3_shav1")]

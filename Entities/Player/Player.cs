@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 {
+	[Signal] public delegate void StatsChangedEventHandler(float currentHealth, float maxHealth, float currentSpeed, float maxSpeed, float currentDamage, float maxDamage);
 	public Inventory Inventory;
 	public Stats Stats;
 	// Called when the node enters the scene tree for the first time.
@@ -13,22 +14,34 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 		AddToGroup("player");
 		Inventory = GetNode<Inventory>("UI/HUD_Layout/Wrapper/Inventory");
 		Stats = GetNode<Stats>("UI/HUD_Layout/Wrapper/Stats");
-		Stats.UpdateValues(CurrentHealth, CurrentSpeed, CurrentDamage);
+		StatsChanged += Stats.OnStatsChanged;
+		Death += OnDeath;
+		EmitSignal(SignalName.StatsChanged, CurrentHealth, _baseHealth, CurrentSpeed, _baseSpeed, CurrentDamage, _baseDamage);
 	}
 
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
+
+	public override void _UnhandledInput(InputEvent @event)
 	{
-		OnMouseLeftClick();
-		OnMouseRightClick();
-		UpdateAnimation(delta);
+		switch (@event)
+		{
+			case var e when e.IsActionPressed("left_click"):
+				OnMouseLeftClick();
+				break;
+			case var e when e.IsActionPressed("right_click"):
+				OnMouseRightClick();
+				break;
+		}
 	}
 
 	public void OnBeingAttacked(float damageAmount, Entity target)
 	{
 		CurrentHealth -= damageAmount;
 		GD.Print($"Attacked by {target}");
-		Stats.UpdateValues(CurrentHealth);
+		EmitSignal(SignalName.StatsChanged, CurrentHealth, _baseHealth, CurrentSpeed, _baseSpeed, CurrentDamage, _baseDamage);
+		if (CurrentHealth <= 0)
+		{
+			EmitSignal(SignalName.Death);
+		}
 	}
 
 	public void OnAttack(float damageAmount, Entity target)
@@ -38,39 +51,37 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 
 	public void OnMouseLeftClick()
 	{
-		if (Input.IsActionJustPressed("left_click"))
+		if (EntityGlobalValues.EntityTargetedByPlayer is not null)
 		{
-			if (EntityGlobalValues.EntityTargetedByPlayer is not null)
-			{
-				CurrentEntityState = EntityState.Attacking;
-				OnAttack(CurrentDamage, EntityGlobalValues.EntityTargetedByPlayer);
-			}
-			else
-			{
-				CurrentEntityState = EntityState.Mining;
-				Vector2 mouseGlobalPosition = GetGlobalMousePosition();
-				EmitSignal(SignalName.BlockDestroyed, mouseGlobalPosition.X, mouseGlobalPosition.Y);
-			}
+			CurrentEntityState = EntityState.Attacking;
+			OnAttack(CurrentDamage, EntityGlobalValues.EntityTargetedByPlayer);
 		}
+		else
+		{
+			CurrentEntityState = EntityState.Mining;
+			Vector2 mouseGlobalPosition = GetGlobalMousePosition();
+			EmitSignal(SignalName.BlockDestroyed, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+		}
+
 
 	}
 
 	public void OnMouseRightClick()
 	{
-		if (Input.IsActionJustPressed("right_click"))
+		switch (Inventory.CurrentItem)
 		{
-			if (Inventory.CurrentItem is UsableItem)
-			{
-				UsableItem item = Inventory.UseCurrentItem();
-				MaxHealth += (float) GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(MaxHealth, item, "health");
-				CurrentDamage += (float) GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseDamage, item, "damage");
-				CurrentSpeed += (float) GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseSpeed, item, "speed");
-				Stats.UpdateValues(MaxHealth, CurrentSpeed, CurrentDamage);
-				return;
-			}
-			CurrentEntityState = EntityState.Placing;
-			Vector2 mouseGlobalPosition = GetGlobalMousePosition();
-			EmitSignal(SignalName.BlockPlaced, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+			case UsableItem item:
+				Inventory.UseCurrentItemAs<UsableItem>();
+				MaxHealth += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseHealth, item, "health");
+				CurrentDamage += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseDamage, item, "damage");
+				CurrentSpeed += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseSpeed, item, "speed");
+				EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, CurrentSpeed, CurrentDamage, CurrentDamage);
+				break;
+			case Block block:
+				CurrentEntityState = EntityState.Placing;
+				Vector2 mouseGlobalPosition = GetGlobalMousePosition();
+				EmitSignal(SignalName.BlockPlaced, mouseGlobalPosition.X, mouseGlobalPosition.Y);
+				break;
 		}
 	}
 
@@ -102,6 +113,12 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 		}
 		Velocity = currentVelocity;
 		MoveAndSlide();
+	}
+
+	// Called every frame. 'delta' is the elapsed time since the previous frame.
+	public override void _Process(double delta)
+	{
+		UpdateAnimation(delta);
 	}
 
 	public override bool CheckIfAnimationLocked()
@@ -139,6 +156,14 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 		}
 	}
 
+	public void OnDeath()
+	{
+		CurrentHealth = _baseHealth;
+		CurrentSpeed = _baseSpeed;
+		CurrentDamage = _baseDamage;
+		GlobalPosition = new(0, 0);
+		EmitSignal(SignalName.StatsChanged, CurrentHealth, _baseHealth, CurrentSpeed, _baseSpeed, CurrentDamage, _baseDamage);
+	}
 
 	public override void FreeEntity()
 	{

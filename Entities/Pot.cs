@@ -4,7 +4,7 @@ using System;
 
 public static class ContainerGlobalValues
 {
-	public static Pot LastOpenedContainer { get; set; } = null;
+	public static Pot LastContainerInteraction { get; set; } = null;
 }
 
 public partial class Pot : Area2D
@@ -23,7 +23,7 @@ public partial class Pot : Area2D
 	{
 		if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
 		{
-			ContainerGlobalValues.LastOpenedContainer = this;
+			ContainerGlobalValues.LastContainerInteraction = this;
 			Loot();
 		}
 	}

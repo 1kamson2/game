@@ -25,6 +25,7 @@ public static class EntityGlobalValues
 	/// PlayerTargetedByEntity defines what entity targeted the player.
 	/// </summary>
 	public static Entity PlayerTargetedByEntity { get; set; } = null;
+	public static int CurrentMobCount { get; set; } = 0;
 	public static void FreeEntityTargetedByPlayer() => EntityTargetedByPlayer = null;
 	public static void FreePlayerTargetedByEntity() => PlayerTargetedByEntity = null;
 }
@@ -47,6 +48,7 @@ public abstract partial class Entity : CharacterBody2D
 	[Signal] public delegate void BlockDestroyedEventHandler(int x, int y);
 	[Signal] public delegate void BlockPlacedEventHandler(int x, int y);
 	[Signal] public delegate void EntityAttackedEventHandler(float damageAmount, Entity target);
+	[Signal] public delegate void DeathEventHandler();
 	protected AnimatedSprite2D EntityAnimation { get; set; }
 	protected EntityState _currentEntityState = EntityState.Idling;
 	protected virtual EntityState CurrentEntityState 

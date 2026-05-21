@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 public partial class ItemManager : ResourceManager<UsableItem>
@@ -90,45 +91,27 @@ public partial class ItemManager : ResourceManager<UsableItem>
         return item as U;
     }
 
-    public void FindAllCraftableItems(Inventory playerInventory)
+    public List<UsableItem> FindAllCraftableItems(List<UsableItem> oldRecipes, List<IInventoryContainer> items)
     {
+        List<UsableItem> newRecipes = new(oldRecipes.Capacity);
         foreach (var (k, v) in Registry)
         {
-            int index = -1;
-            if (CanBeCrafted(k, playerInventory))
+            if (CanBeCrafted(k, items))
             {
-                
-                index = playerInventory.Recipes.FindIndex(recipe => recipe is not null && recipe.Id == k);
-                if (index != -1)
-                {
-                    // it exists already
-                    continue;
-                }
-
-                index = playerInventory.Recipes.FindIndex(recipe => recipe is null);
-                if (index != -1)
-                {
-                    playerInventory.Recipes[index] = v;
-                }
-            }
-            else
-            {
-                index = playerInventory.Recipes.FindIndex(recipe => recipe is not null && recipe.Id == k);
-                if (index != -1)
-                {
-                    playerInventory.Recipes[index] = null;
-                }
+                newRecipes.Add(v);
             }
         }
+        return newRecipes;
     }
-    public bool CanBeCrafted(string item_id, Inventory playerInventory)
+
+    public bool CanBeCrafted(string item_id, List<IInventoryContainer> items)
     {
         if (!Registry.TryGetValue(item_id, out UsableItem registredItem))
         {
             return false;
         }
 
-        var ingredients = playerInventory.Items
+        var ingredients = items
             .Where(pItem => pItem is not null && registredItem.RequiredItems
                 .Any(rItem => rItem is not null && pItem.Id == rItem.Id)
         );
@@ -152,7 +135,6 @@ public partial class ItemManager : ResourceManager<UsableItem>
         return true;
     }
 
-    // FIXME: Random Generator should be passed here
     public string GetRandomItemId() => Registry.Keys.ElementAt(Random.Shared.Next(Registry.Count));
     
     /// <summary>

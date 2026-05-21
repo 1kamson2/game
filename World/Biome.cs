@@ -9,14 +9,20 @@ using System.Collections.Generic;
 	// Define how big a biome will be
 	[Export] public Vector2I SpanningBoundaries { get; protected set; } = new(int.MinValue, int.MinValue);
 	protected Dictionary<string, PackedScene> _structureRegistry;
-	public List<PackedScene> MobPool { get; set; }
-	public List<Pot> ContainerPool { get; set; } = new List<Pot>();
+	public List<PackedScene> MobScenePool { get; set; }
 	static protected Random rndGenerator = new Random();
 	// Generate chunks base on the given coordinates. It will render chunks to fillup the entire viewport.
 	// Then renders the chunks in the up, right, down, left directions.
 	public abstract void OrchestrateChunkGeneration(ChunkArea area, FastNoiseLite noiseFunction);
-	public abstract bool OrchestrateMobGeneration(ChunkArea area, FastNoiseLite noiseFunction, Vector2 playerPosition);
-	public abstract void OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction);
+	/// <summary>
+	/// Orchestrate Mob Generation
+	/// </summary>
+	/// <param name="area"></param>
+	/// <param name="noiseFunction"></param>
+	/// <param name="playerPosition"></param>
+	/// <returns>Returns the reference to the Mob that was orchestrated. </returns>
+	public abstract Mob OrchestrateMobGeneration(ChunkArea area, FastNoiseLite noiseFunction, Vector2 playerPosition);
+	public abstract List<Pot> OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction);
 	public abstract void OrchestrateEventGeneration(ChunkArea area, FastNoiseLite noiseFunction);
 	public abstract void OrchestrateStructureGeneration(ChunkArea area, FastNoiseLite noiseFunction);
 	public abstract void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory);

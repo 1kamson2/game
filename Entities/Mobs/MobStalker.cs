@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel;
 
 
-// TODO: Look into: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+// INFO: Look into: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
 [GlobalClass]
 public partial class MobStalker : Mob
 {
