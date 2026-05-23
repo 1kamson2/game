@@ -12,10 +12,10 @@ public partial class MobBoss : Mob
 		base._Ready();
 	}
 
-	public override void FreeEntity()
-	{
-		Target.EntityAttacked -= OnBeingAttacked;
-		EntityGlobalValues.FreeEntityTargetedByPlayer();
-		QueueFree();
-	}
+    public override void FreeEntity()
+    {
+        base.FreeEntity();
+		GlobalWorldStateValues._wasBossSlain = true;
+    }
+
 }

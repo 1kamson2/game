@@ -12,10 +12,17 @@ public partial class Pot : Area2D
 	[Signal] public delegate void ContainerLootedEventHandler(string loot_id, int amount);
 	[Export] public string StoredItem { get; set; }
 	[Export] public int Amount { get; set; }
+	protected AnimatedSprite2D PotAnimation { get; set; }
 
-	public Pot() { }
+    public override void _Ready()
+    {
+        base._Ready();
+		PotAnimation = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+    }
+
 	public void Loot()
 	{
+		PotAnimation.Play("loot");
 		EmitSignal(SignalName.ContainerLooted, StoredItem, Amount);
 	}
 

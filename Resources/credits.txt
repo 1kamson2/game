@@ -1,3 +1,6 @@
 Tileset (Added some tiles myself): https://piiixl.itch.io/textures
 Knight Character: https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character
-Mobs and UI: https://pixelfrog-assets.itch.io/tiny-swords
+Parallax: https://bongseng.itch.io/parallax-forest-desert-sky-moon
+Chest: https://otsoga.itch.io/free-treasure-chest
+Mobs:
+- https://luizmelo.itch.io/monsters-creatures-fantasy

@@ -1,6 +1,4 @@
 using Godot;
-using System;
-using System.Collections.Generic;
 
 public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 {
@@ -16,7 +14,7 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 		Stats = GetNode<Stats>("UI/HUD_Layout/Wrapper/Stats");
 		StatsChanged += Stats.OnStatsChanged;
 		Death += OnDeath;
-		EmitSignal(SignalName.StatsChanged, CurrentHealth, _baseHealth, CurrentSpeed, _baseSpeed, CurrentDamage, _baseDamage);
+		EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, MaxSpeed, CurrentDamage, MaxDamage);
 	}
 
 
@@ -37,7 +35,7 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 	{
 		CurrentHealth -= damageAmount;
 		GD.Print($"Attacked by {target}");
-		EmitSignal(SignalName.StatsChanged, CurrentHealth, _baseHealth, CurrentSpeed, _baseSpeed, CurrentDamage, _baseDamage);
+		EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, MaxSpeed, CurrentDamage, MaxDamage);
 		if (CurrentHealth <= 0)
 		{
 			EmitSignal(SignalName.Death);
@@ -73,11 +71,15 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 			case UsableItem item:
 				Inventory.UseCurrentItemAs<UsableItem>();
 				MaxHealth += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseHealth, item, "health");
-				CurrentDamage += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseDamage, item, "damage");
-				CurrentSpeed += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseSpeed, item, "speed");
-				EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, CurrentSpeed, CurrentDamage, CurrentDamage);
+				MaxDamage += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseDamage, item, "damage");
+				MaxSpeed += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseSpeed, item, "speed");
+				CurrentHealth += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseHealth, item, "health_regen");
+				CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);
+				CurrentDamage = Mathf.Max(CurrentDamage, MaxDamage);
+				CurrentSpeed = Mathf.Max(CurrentSpeed, MaxSpeed);
+				EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, MaxSpeed, CurrentDamage, MaxDamage);
 				break;
-			case Block block:
+			case Block _:
 				CurrentEntityState = EntityState.Placing;
 				Vector2 mouseGlobalPosition = GetGlobalMousePosition();
 				EmitSignal(SignalName.BlockPlaced, mouseGlobalPosition.X, mouseGlobalPosition.Y);
@@ -158,11 +160,14 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 
 	public void OnDeath()
 	{
-		CurrentHealth = _baseHealth;
-		CurrentSpeed = _baseSpeed;
-		CurrentDamage = _baseDamage;
+		MaxHealth = _baseHealth;
+		CurrentHealth = MaxHealth;
+		MaxSpeed = _baseSpeed;
+		CurrentSpeed = MaxSpeed;
+		MaxDamage = _baseDamage;
+		CurrentDamage = MaxDamage;
 		GlobalPosition = new(0, 0);
-		EmitSignal(SignalName.StatsChanged, CurrentHealth, _baseHealth, CurrentSpeed, _baseSpeed, CurrentDamage, _baseDamage);
+		EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, MaxSpeed, CurrentDamage, MaxDamage);
 	}
 
 	public override void FreeEntity()

@@ -7,3 +7,4 @@ script = ExtResource("1_le2uf")
 ChunkSize = 64
 Seed = 67
 NoiseFunctionFrequency = 0.05
+_maxMobCount = 3

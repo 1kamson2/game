@@ -24,6 +24,12 @@ public partial class Mob : Entity, IMobController
 	public override void _Ready()
 	{
 		base._Ready();
+		MaxHealth *= GlobalWorldStateValues.MobHealthModifier;
+		CurrentHealth = MaxHealth;
+		MaxSpeed *= GlobalWorldStateValues.MobSpeedModifier;
+		CurrentSpeed = MaxSpeed;
+		MaxDamage *= GlobalWorldStateValues.MobDamageModifier;
+		CurrentDamage = MaxDamage;
 		Target = GetTree().GetFirstNodeInGroup("player") as Player;
 		Target.EntityAttacked += OnBeingAttacked;
 		EntityAttacked += Target.OnBeingAttacked;
@@ -42,7 +48,6 @@ public partial class Mob : Entity, IMobController
 			Vector2 direction = GlobalPosition.DirectionTo(WanderingCoordinates).Sign();
 			currentVelocity.X = direction.X * CurrentSpeed;
 			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
-			CurrentEntityState = EntityState.Running;
 		}
 		return currentVelocity;
 	}
@@ -73,7 +78,6 @@ public partial class Mob : Entity, IMobController
 			Vector2 direction = GlobalPosition.DirectionTo(Target.GlobalPosition).Sign();
 			currentVelocity.X = direction.X * CurrentSpeed;
 			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
-			CurrentEntityState = EntityState.Running;
 		}
 		return currentVelocity;
 	}
@@ -110,12 +114,14 @@ public partial class Mob : Entity, IMobController
 	{
 		if (Target.GlobalPosition.DistanceTo(this.GlobalPosition) < 50)
 		{
+			CurrentEntityState = EntityState.Attacking;
 			EmitSignal(SignalName.EntityAttacked, CurrentDamage, Target);
 		}
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		CurrentEntityState = EntityState.Running;
 		if (IsMobAggroed())
 		{
 			Velocity = PhysicsProcessAggroed(delta);
@@ -131,6 +137,7 @@ public partial class Mob : Entity, IMobController
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
+		UpdateAnimation(delta);
 	}
 
 	public override void UpdateAnimation(double delta)
@@ -152,15 +159,26 @@ public partial class Mob : Entity, IMobController
 
 	public override bool CheckIfAnimationLocked()
 	{
-		return false;
+		return EntityAnimation.IsPlaying() && (
+		EntityAnimation.Animation == "attack");
+	}
+
+	public void ShouldDespawn()
+	{
+		if (Target.GlobalPosition.DistanceTo(GlobalPosition) > 250)
+		{
+			FreeEntity();
+		}
 	}
 
 	public override void FreeEntity()
 	{
 		Target.EntityAttacked -= OnBeingAttacked;
 		Death -= FreeEntity;
+		GlobalManagers.Instance.GetManager<WorldManager>().MaxMobCountAchieved -= ShouldDespawn;
 		EntityGlobalValues.FreeEntityTargetedByPlayer();
 		EntityGlobalValues.CurrentMobCount--;
+		RemoveFromGroup("mobs");
 		QueueFree();
 	}
 }

@@ -121,13 +121,9 @@ public partial class PlainsBiome : Biome
 			mobInstance.QueueFree();
 			return null;
 		}
-		int randomDistance = rndGenerator.Next(-150, 150);
-		Vector2 mobPosition = playerPosition;
-		var horizontalRange = area.HorizontalRange();
-		var verticalRange = area.VerticalRange();
-		mobPosition.X = Math.Clamp(mobPosition.X + randomDistance, horizontalRange.lo, horizontalRange.hi);
-		mobPosition.Y = Math.Clamp(mobPosition.Y + randomDistance, verticalRange.lo, verticalRange.hi);
-		mobInstance.GlobalPosition = mobPosition;
+		int randomXOffset = rndGenerator.Next(-300, 300);
+		int randomYOffset = rndGenerator.Next(-25, 25);
+		mobInstance.GlobalPosition = new(playerPosition.X + randomXOffset, playerPosition.Y + randomYOffset);
 		AddChild(mobInstance);
 		return mobInstance;
 	}
@@ -291,6 +287,8 @@ public partial class PlainsBiome : Biome
 		GenerateOres(area, noiseFunction, "block_coal");
 		GenerateOres(area, noiseFunction, "block_iron");
 		GenerateOres(area, noiseFunction, "block_diamond");
+		GenerateOres(area, noiseFunction, "block_redstone");
+		GenerateOres(area, noiseFunction, "block_emerald");
 	}
 
 	public override void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)
@@ -301,8 +299,9 @@ public partial class PlainsBiome : Biome
 		{
 			return;
 		}
-		GD.Print($"Destroyed: {block.Id}");
+		
 		EraseCell(mouseCoordinates);
+		GD.Print($"Block destroyed: {block.Id}");
 		playersInventory.AddNewItem(block);
 	}
 

@@ -1,6 +1,55 @@
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Godot;
 
+public static class GlobalWorldStateValues
+{
+	private static bool IsInHardmode
+	{
+		get => _wasBossSlain;
+	}
+	public static bool _wasBossSlain = false;
+	private static float _maxModifierValue = 2.0f;
+	private static float _modifierIncrement = 0.02f;
+	private static float _mobHealthModifier = 1.0f;
+	private static float _mobDamageModifier = 1.0f;
+	private static float _mobSpeedModifier = 1.0f;
+	// Mob<Field>Modifier is used to make game harder. It applies to the next spawned instance of mobs.
+	public static float MaxModifierValue
+	{
+		get => IsInHardmode ? 2 * _maxModifierValue : _maxModifierValue;
+	}
+
+	public static float MobHealthModifier
+	{
+		get
+		{
+			float old = _mobHealthModifier;
+			_mobHealthModifier = Math.Clamp(_mobHealthModifier + _modifierIncrement, old, MaxModifierValue);
+			return old;
+		}
+	}
+	public static float MobDamageModifier
+	{
+		get
+		{
+			float old = _mobDamageModifier;
+			_mobDamageModifier = Math.Clamp(_mobDamageModifier + _modifierIncrement, old, MaxModifierValue);
+			return old;
+		}
+	}
+	public static float MobSpeedModifier
+	{
+		get
+		{
+			float old = _mobSpeedModifier;
+			_mobSpeedModifier = Math.Clamp(_mobSpeedModifier + _modifierIncrement, old, MaxModifierValue);
+			return old;
+		}
+
+	}
+}
 
 public partial class WorldManager : ResourceManager<Biome>
 {
@@ -24,6 +73,7 @@ public partial class WorldManager : ResourceManager<Biome>
 	// Define noise function, used for chunk generation
 	[Export] public FastNoiseLite NoiseFunction { get; set; } = new FastNoiseLite();
 	[Export] private int _maxMobCount = 25;
+	[Signal] public delegate void MaxMobCountAchievedEventHandler();
 	public Godot.Vector2 ViewportSize { get; set; }
 	public ChunkArea CurrentArea { get; set; }
 	public void ScheduleChunkUnload() { }
@@ -41,13 +91,17 @@ public partial class WorldManager : ResourceManager<Biome>
 		if (EntityGlobalValues.CurrentMobCount > _maxMobCount)
 		{
 			GD.Print($"Mob cannot be spawned it will exceed the threshold: {_maxMobCount} mobs spawned.");
+			EmitSignal(SignalName.MaxMobCountAchieved);
+			return;
 		}
 		Mob mobSpawned = CurrentBiome.OrchestrateMobGeneration(CurrentArea, NoiseFunction, _player.GlobalPosition);
 		if (mobSpawned is null)
 		{
 			return;
 		}
+
 		_mobAttackTimer.Timeout += mobSpawned.OnAttack;
+		MaxMobCountAchieved += mobSpawned.ShouldDespawn;
 	}
 	public void ScheduleEventGeneration() { }
 	public void ScheduleLootGeneration()

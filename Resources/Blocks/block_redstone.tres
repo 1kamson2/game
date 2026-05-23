@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="Block" format=3 uid="uid://b6j8nlxqksgoi"]
+
+[ext_resource type="Script" uid="uid://cxliretlc4b7o" path="res://Utilities/BlockManager/Block.cs" id="1_5rdtm"]
+
+[resource]
+script = ExtResource("1_5rdtm")
+Id = "block_redstone"
+MaxStackSize = 64
+IsStackable = true
+Name = "Redstone"
+NoiseBoundaries = Vector2(-0.3, -0.2)
+HeightBoundaries = Vector2(60, 255)
+TilesetCoordinates = Vector2i(9, 5)

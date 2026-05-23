@@ -16,12 +16,12 @@ public partial class Stats : PanelContainer
 
 	public void OnStatsChanged(float currentHealth, float maxHealth, float currentSpeed, float maxSpeed, float currentDamage, float maxDamage)
 	{
-		Health.GetNode<Label>("Value").Text = currentHealth.ToString();
-		Health.GetNode<Label>("MaxValue").Text = maxHealth.ToString();
-		Speed.GetNode<Label>("Value").Text = currentSpeed.ToString();
-		Speed.GetNode<Label>("MaxValue").Text = maxSpeed.ToString();
-		Damage.GetNode<Label>("Value").Text = currentDamage.ToString();
-		Damage.GetNode<Label>("MaxValue").Text = maxDamage.ToString();
+		Health.GetNode<Label>("Value").Text = currentHealth.ToString("0");
+		Health.GetNode<Label>("MaxValue").Text = maxHealth.ToString("0");
+		Speed.GetNode<Label>("Value").Text = currentSpeed.ToString("0");
+		Speed.GetNode<Label>("MaxValue").Text = maxSpeed.ToString("0");
+		Damage.GetNode<Label>("Value").Text = currentDamage.ToString("0");
+		Damage.GetNode<Label>("MaxValue").Text = maxDamage.ToString("0");
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

@@ -2,81 +2,73 @@
 
 [ext_resource type="PackedScene" uid="uid://hrodjmoax5xs" path="res://Entities/Entity.tscn" id="1_6m41h"]
 [ext_resource type="Script" uid="uid://ujvks2l2bwyq" path="res://Entities/Mobs/Mob.cs" id="1_nelae"]
-[ext_resource type="Texture2D" uid="uid://tc225yabb3d0" path="res://Resources/Mobs/Units/Red Units/Warrior/Warrior_Attack1.png" id="3_lwk6a"]
-[ext_resource type="Texture2D" uid="uid://w6wb1yv0gcqe" path="res://Resources/Mobs/Units/Red Units/Warrior/Warrior_Idle.png" id="4_lvlw4"]
-[ext_resource type="Texture2D" uid="uid://bwxpybffoap7a" path="res://Resources/Mobs/Units/Red Units/Warrior/Warrior_Run.png" id="5_36hyu"]
+[ext_resource type="Texture2D" uid="uid://w7cdqnnota2r" path="res://Resources/Mobs/Skeleton/Attack.png" id="3_lwk6a"]
+[ext_resource type="Texture2D" uid="uid://d6bu4ko7jo3m" path="res://Resources/Mobs/Skeleton/Idle.png" id="4_lvlw4"]
+[ext_resource type="Texture2D" uid="uid://dtbn7tt6r0pce" path="res://Resources/Mobs/Skeleton/Walk.png" id="5_36hyu"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_yyn6h"]
 atlas = ExtResource("3_lwk6a")
-region = Rect2(0, 0, 192, 192)
+region = Rect2(0, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ieqrd"]
 atlas = ExtResource("3_lwk6a")
-region = Rect2(192, 0, 192, 192)
+region = Rect2(150, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_06gyp"]
 atlas = ExtResource("3_lwk6a")
-region = Rect2(384, 0, 192, 192)
+region = Rect2(300, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g6ayj"]
 atlas = ExtResource("3_lwk6a")
-region = Rect2(576, 0, 192, 192)
+region = Rect2(450, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_m23wd"]
-atlas = ExtResource("4_lvlw4")
-region = Rect2(0, 0, 192, 192)
+atlas = ExtResource("3_lwk6a")
+region = Rect2(600, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a5ohk"]
-atlas = ExtResource("4_lvlw4")
-region = Rect2(192, 0, 192, 192)
+atlas = ExtResource("3_lwk6a")
+region = Rect2(750, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_jdlr4"]
-atlas = ExtResource("4_lvlw4")
-region = Rect2(384, 0, 192, 192)
+atlas = ExtResource("3_lwk6a")
+region = Rect2(900, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_k0trn"]
-atlas = ExtResource("4_lvlw4")
-region = Rect2(576, 0, 192, 192)
+atlas = ExtResource("3_lwk6a")
+region = Rect2(1050, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ulcx6"]
 atlas = ExtResource("4_lvlw4")
-region = Rect2(768, 0, 192, 192)
+region = Rect2(0, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ag7us"]
 atlas = ExtResource("4_lvlw4")
-region = Rect2(960, 0, 192, 192)
+region = Rect2(150, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_w21qp"]
 atlas = ExtResource("4_lvlw4")
-region = Rect2(1152, 0, 192, 192)
+region = Rect2(300, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1jehq"]
 atlas = ExtResource("4_lvlw4")
-region = Rect2(1344, 0, 192, 192)
+region = Rect2(450, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_pq0iw"]
 atlas = ExtResource("5_36hyu")
-region = Rect2(0, 0, 192, 192)
+region = Rect2(0, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2mpl8"]
 atlas = ExtResource("5_36hyu")
-region = Rect2(192, 0, 192, 192)
+region = Rect2(150, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4j2xe"]
 atlas = ExtResource("5_36hyu")
-region = Rect2(384, 0, 192, 192)
+region = Rect2(300, 0, 150, 150)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_0uxrq"]
 atlas = ExtResource("5_36hyu")
-region = Rect2(576, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_181f8"]
-atlas = ExtResource("5_36hyu")
-region = Rect2(768, 0, 192, 192)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_46da5"]
-atlas = ExtResource("5_36hyu")
-region = Rect2(960, 0, 192, 192)
+region = Rect2(450, 0, 150, 150)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xawov"]
 animations = [{
@@ -92,12 +84,7 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_g6ayj")
-}],
-"loop": false,
-"name": &"attack",
-"speed": 5.0
 }, {
-"frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_m23wd")
 }, {
@@ -109,7 +96,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_k0trn")
+}],
+"loop": false,
+"name": &"attack",
+"speed": 8.0
 }, {
+"frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ulcx6")
 }, {
@@ -124,7 +116,7 @@ animations = [{
 }],
 "loop": false,
 "name": &"idle",
-"speed": 8.0
+"speed": 4.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -138,19 +130,13 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_0uxrq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_181f8")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_46da5")
 }],
 "loop": false,
 "name": &"run",
-"speed": 6.0
+"speed": 4.0
 }]
 
-[node name="Entity" unique_id=1815607445 instance=ExtResource("1_6m41h")]
+[node name="Entity" unique_id=1815607445 groups=["mobs"] instance=ExtResource("1_6m41h")]
 script = ExtResource("1_nelae")
 MaxDistanceToPlayer = 250.0
 SpawnChance = 1.0
@@ -159,6 +145,6 @@ _baseDamage = 17.0
 _baseJumpForce = 275.0
 
 [node name="AnimatedSprite2D" parent="." index="1" unique_id=1297269675]
-scale = Vector2(0.5, 0.5)
+position = Vector2(-4, 0)
 sprite_frames = SubResource("SpriteFrames_xawov")
-animation = &"attack"
+animation = &"run"

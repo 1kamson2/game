@@ -13,8 +13,7 @@ metadata/_custom_type_script = "uid://dj8t1mvo1mp12"
 [sub_resource type="Resource" id="Resource_5myj1"]
 script = ExtResource("2_kjdm4")
 Id = "speed"
-Value = 100.0
-ModifierType = 1
+Value = 0.01
 metadata/_custom_type_script = "uid://b0wxhg1mslhgi"
 
 [resource]

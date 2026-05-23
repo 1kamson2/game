@@ -11,11 +11,4 @@ public partial class MobStalker : Mob
 	{
 		base._Ready();
 	}
-
-	public override void FreeEntity()
-	{
-		Target.EntityAttacked -= OnBeingAttacked;
-		EntityGlobalValues.FreeEntityTargetedByPlayer();
-		QueueFree();
-	}
 }
