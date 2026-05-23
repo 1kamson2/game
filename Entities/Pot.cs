@@ -4,7 +4,7 @@ using System;
 
 public static class ContainerGlobalValues
 {
-	public static Pot LastOpenedContainer { get; set; } = null;
+	public static Pot LastContainerInteraction { get; set; } = null;
 }
 
 public partial class Pot : Area2D
@@ -12,10 +12,17 @@ public partial class Pot : Area2D
 	[Signal] public delegate void ContainerLootedEventHandler(string loot_id, int amount);
 	[Export] public string StoredItem { get; set; }
 	[Export] public int Amount { get; set; }
+	protected AnimatedSprite2D PotAnimation { get; set; }
 
-	public Pot() { }
+    public override void _Ready()
+    {
+        base._Ready();
+		PotAnimation = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+    }
+
 	public void Loot()
 	{
+		PotAnimation.Play("loot");
 		EmitSignal(SignalName.ContainerLooted, StoredItem, Amount);
 	}
 
@@ -23,7 +30,7 @@ public partial class Pot : Area2D
 	{
 		if (@event is InputEventMouseButton mouseEvent && mouseEvent.Pressed)
 		{
-			ContainerGlobalValues.LastOpenedContainer = this;
+			ContainerGlobalValues.LastContainerInteraction = this;
 			Loot();
 		}
 	}

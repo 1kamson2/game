@@ -23,6 +23,7 @@ project/assembly_name="Mineraria"
 
 player="Use to tag entities as a player."
 mobs="Add mobs to this group."
+lootable=""
 
 [input]
 

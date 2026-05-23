@@ -111,35 +111,39 @@ public partial class PlainsBiome : Biome
 		GenerateMines(area);
 	}
 
-	public override bool OrchestrateMobGeneration(ChunkArea area, FastNoiseLite noiseFunction, Vector2 playerPosition)
+	public override Mob OrchestrateMobGeneration(ChunkArea area, FastNoiseLite noiseFunction, Vector2 playerPosition)
 	{
-		int mobIndex = rndGenerator.Next(MobPool.Count);
+		int mobIndex = rndGenerator.Next(MobScenePool.Count);
 		// Try to spawn mob
-		Mob mobInstance = MobPool[mobIndex].Instantiate<Mob>();
-		if (rndGenerator.NextDouble() > mobInstance.SpawnChance) { return false; }
-		int randomDistance = rndGenerator.Next(-150, 150);
-		Vector2 mobPosition = playerPosition;
-		var horizontalRange = area.HorizontalRange();
-		var verticalRange = area.VerticalRange();
-		mobPosition.X = Math.Clamp(mobPosition.X + randomDistance, horizontalRange.lo, horizontalRange.hi);
-		mobPosition.Y = Math.Clamp(mobPosition.Y + randomDistance, verticalRange.lo, verticalRange.hi);
-		mobInstance.GlobalPosition = mobPosition;
+		Mob mobInstance = MobScenePool[mobIndex].Instantiate<Mob>();
+		if (rndGenerator.NextDouble() > mobInstance.SpawnChance)
+		{
+			mobInstance.QueueFree();
+			return null;
+		}
+		int randomXOffset = rndGenerator.Next(-300, 300);
+		int randomYOffset = rndGenerator.Next(-25, 25);
+		mobInstance.GlobalPosition = new(playerPosition.X + randomXOffset, playerPosition.Y + randomYOffset);
 		AddChild(mobInstance);
-		return true;
+		return mobInstance;
 	}
-	public override void OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction)
+	public override List<Pot> OrchestrateLootGeneration(ChunkArea area, FastNoiseLite noiseFunction)
 	{
 		PackedScene potScene = GD.Load<PackedScene>("res://Entities/Pot.tscn");
-		for (int i = 0; i < 50; i++)
+		List<Pot> potRefs = Enumerable.Range(0, 50).Select(_ =>
 		{
-			Pot potInstance = potScene.Instantiate<Pot>();
-			Vector2 position = MapToLocal(new(rndGenerator.Next(-400, 400), rndGenerator.Next(-200, 200)));
-			potInstance.Position = position;
-			potInstance.StoredItem = GlobalManagers.Instance.GetManager<ItemManager>().GetRandomItemId();
-			potInstance.Amount = 1;
-			ContainerPool.Add(potInstance);
-			AddChild(potInstance);
+			var pot = potScene.Instantiate<Pot>();
+			pot.Position = MapToLocal(new(rndGenerator.Next(-400, 400), rndGenerator.Next(-200, 200)));
+			pot.StoredItem = GlobalManagers.Instance.GetManager<ItemManager>().GetRandomItemId();
+			pot.Amount = 1;
+			return pot;
+		}).ToList();
+
+		foreach (var pot in potRefs)
+		{
+			AddChild(pot);
 		}
+		return potRefs;
 	}
 
 	public override void _Ready()
@@ -155,7 +159,7 @@ public partial class PlainsBiome : Biome
 			{ "structure_mine",  GD.Load<PackedScene>("res://Resources/Structures/MineStructure.tscn") },
 		};
 
-		MobPool = new List<PackedScene>()
+		MobScenePool = new List<PackedScene>()
 		{
 			GD.Load<PackedScene>("res://Entities/Mobs/Mob.tscn"),
 			GD.Load<PackedScene>("res://Entities/Mobs/MobBoss.tscn"),
@@ -283,6 +287,8 @@ public partial class PlainsBiome : Biome
 		GenerateOres(area, noiseFunction, "block_coal");
 		GenerateOres(area, noiseFunction, "block_iron");
 		GenerateOres(area, noiseFunction, "block_diamond");
+		GenerateOres(area, noiseFunction, "block_redstone");
+		GenerateOres(area, noiseFunction, "block_emerald");
 	}
 
 	public override void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)
@@ -293,9 +299,10 @@ public partial class PlainsBiome : Biome
 		{
 			return;
 		}
-		GD.Print($"Destroyed: {atlasCoords} = {block.Name}");
+		
 		EraseCell(mouseCoordinates);
-		playersInventory.AddNewBlock(block);
+		GD.Print($"Block destroyed: {block.Id}");
+		playersInventory.AddNewItem(block);
 	}
 
 	public override void TryPlaceBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)
@@ -309,13 +316,12 @@ public partial class PlainsBiome : Biome
 		}
 
 		// Can return something already
-		string blockId = playersInventory.UseCurrentBlock();
-		if (blockId is null)
+		Block block = playersInventory.UseCurrentItemAs<Block>();
+		if (block is null)
 		{
 			return;
 		}
-		Block block = GlobalManagers.Instance.GetManager<BlockManager>().GetResource(blockId);
-		GD.Print($"Got: {blockId} = {block}");
+		GD.Print($"Placed: {block.Id}");
 		SetCell(mouseCoordinates, 1, block.TilesetCoordinates);
 	}
 

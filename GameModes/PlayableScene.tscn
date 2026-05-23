@@ -1,7 +1,83 @@
 [gd_scene format=3 uid="uid://br6api8q6siwl"]
 
+[ext_resource type="Texture2D" uid="uid://ddrs5ucebhxw8" path="res://Resources/Parallax/forest_sky.png" id="1_r034k"]
 [ext_resource type="PackedScene" uid="uid://bra4koakfn8bu" path="res://Utilities/GlobalManagers.tscn" id="2_81q03"]
+[ext_resource type="Texture2D" uid="uid://bcbu8dmdppgi8" path="res://Resources/Parallax/forest_mountain.png" id="2_de2es"]
+[ext_resource type="Texture2D" uid="uid://bfty338xi6nnw" path="res://Resources/Parallax/forest_back.png" id="3_87fps"]
+[ext_resource type="Texture2D" uid="uid://oh7n6nu6nu8e" path="res://Resources/Parallax/forest_long.png" id="4_crut1"]
+[ext_resource type="Texture2D" uid="uid://dqvyiqddalsnn" path="res://Resources/Parallax/forest_mid.png" id="5_d2ry5"]
+[ext_resource type="Texture2D" uid="uid://cq2djaivpy7s5" path="res://Resources/Parallax/forest_moon.png" id="6_jfmv8"]
+[ext_resource type="Texture2D" uid="uid://cff3vs0tq8g41" path="res://Resources/Parallax/forest_short.png" id="7_dk8tp"]
 
 [node name="PlayableScene" type="Node2D" unique_id=575379532]
+metadata/_edit_horizontal_guides_ = [833.0]
+metadata/_edit_vertical_guides_ = [1335.0, 1708.0]
+
+[node name="Parallax" type="Node2D" parent="." unique_id=65511972]
+z_index = -999
+position = Vector2(855, 540)
+scale = Vector2(0.9, 0.9)
+
+[node name="Sky" type="Parallax2D" parent="Parallax" unique_id=431347665]
+scroll_scale = Vector2(0.05, 0.05)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Sky" unique_id=1873544303]
+texture = ExtResource("1_r034k")
+
+[node name="Mountain" type="Parallax2D" parent="Parallax" unique_id=734003085]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.15, 0.15)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Mountain" unique_id=1727976358]
+texture = ExtResource("2_de2es")
+
+[node name="ForestBack" type="Parallax2D" parent="Parallax" unique_id=1089934117]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.3, 0.3)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestBack" unique_id=1461805177]
+texture = ExtResource("3_87fps")
+
+[node name="ForestLong" type="Parallax2D" parent="Parallax" unique_id=1195857587]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.45, 0.45)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestLong" unique_id=1461552561]
+texture = ExtResource("4_crut1")
+
+[node name="ForestMid" type="Parallax2D" parent="Parallax" unique_id=1515817628]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.55, 0.55)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestMid" unique_id=1067019245]
+texture = ExtResource("5_d2ry5")
+
+[node name="Moon" type="Parallax2D" parent="Parallax" unique_id=1886937466]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.65, 0.65)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Moon" unique_id=291947985]
+texture = ExtResource("6_jfmv8")
+
+[node name="ForestShort" type="Parallax2D" parent="Parallax" unique_id=2053039455]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.8, 0.8)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestShort" unique_id=1482958380]
+texture = ExtResource("7_dk8tp")
 
 [node name="GlobalManagers" parent="." unique_id=287978930 instance=ExtResource("2_81q03")]

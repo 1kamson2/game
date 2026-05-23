@@ -9,7 +9,7 @@ public interface IMobController
 	public bool IsMobAggroed();
 }
 
-// TODO: Look into: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
+// INFO: https://docs.godotengine.org/en/stable/classes/class_astargrid2d.html
 /// <summary>
 /// Mob is a generic Mob class. It creates a generic mob. Other Mob classes should derive from this class.
 /// </summary>
@@ -24,10 +24,18 @@ public partial class Mob : Entity, IMobController
 	public override void _Ready()
 	{
 		base._Ready();
+		MaxHealth *= GlobalWorldStateValues.MobHealthModifier;
+		CurrentHealth = MaxHealth;
+		MaxSpeed *= GlobalWorldStateValues.MobSpeedModifier;
+		CurrentSpeed = MaxSpeed;
+		MaxDamage *= GlobalWorldStateValues.MobDamageModifier;
+		CurrentDamage = MaxDamage;
 		Target = GetTree().GetFirstNodeInGroup("player") as Player;
 		Target.EntityAttacked += OnBeingAttacked;
 		EntityAttacked += Target.OnBeingAttacked;
+		Death += FreeEntity;
 		WanderingCoordinates = new(-50, 50);
+		EntityGlobalValues.CurrentMobCount++;
 	}
 
 	public virtual Vector2 PhysicsProcessNoAggroed(double delta)
@@ -40,7 +48,6 @@ public partial class Mob : Entity, IMobController
 			Vector2 direction = GlobalPosition.DirectionTo(WanderingCoordinates).Sign();
 			currentVelocity.X = direction.X * CurrentSpeed;
 			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
-			CurrentEntityState = EntityState.Running;
 		}
 		return currentVelocity;
 	}
@@ -71,7 +78,6 @@ public partial class Mob : Entity, IMobController
 			Vector2 direction = GlobalPosition.DirectionTo(Target.GlobalPosition).Sign();
 			currentVelocity.X = direction.X * CurrentSpeed;
 			currentVelocity.Y = GD.Randf() < 0.05f || direction.Y < 0 ? -CurrentJumpForce : currentVelocity.Y;
-			CurrentEntityState = EntityState.Running;
 		}
 		return currentVelocity;
 	}
@@ -98,22 +104,27 @@ public partial class Mob : Entity, IMobController
 			return;
 		}
 		CurrentHealth -= damageAmount;
+		if (CurrentHealth <= 0)
+		{
+			EmitSignal(SignalName.Death);
+		}
 	}
 
-	public virtual void OnAttack(float damageAmount)
+	public virtual void OnAttack()
 	{
-		EmitSignal(SignalName.EntityAttacked, damageAmount, Target);
+		if (Target.GlobalPosition.DistanceTo(this.GlobalPosition) < 50)
+		{
+			CurrentEntityState = EntityState.Attacking;
+			EmitSignal(SignalName.EntityAttacked, CurrentDamage, Target);
+		}
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		CurrentEntityState = EntityState.Running;
 		if (IsMobAggroed())
 		{
 			Velocity = PhysicsProcessAggroed(delta);
-			if (Target.GlobalPosition.DistanceTo(this.GlobalPosition) < 50)
-			{
-				OnAttack(25);
-			}
 		}
 		else
 		{
@@ -126,38 +137,48 @@ public partial class Mob : Entity, IMobController
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-		if (CurrentHealth < 0)
+		UpdateAnimation(delta);
+	}
+
+	public override void UpdateAnimation(double delta)
+	{
+		switch (CurrentEntityState)
+		{
+			case EntityState.Running:
+				EntityAnimation.Play("run");
+				break;
+			case EntityState.Idling:
+				EntityAnimation.Play("idle");
+				break;
+			case EntityState.Attacking:
+				EntityAnimation.Play("attack");
+				break;
+		}
+	}
+
+
+	public override bool CheckIfAnimationLocked()
+	{
+		return EntityAnimation.IsPlaying() && (
+		EntityAnimation.Animation == "attack");
+	}
+
+	public void ShouldDespawn()
+	{
+		if (Target.GlobalPosition.DistanceTo(GlobalPosition) > 250)
 		{
 			FreeEntity();
 		}
 	}
 
-    public override void UpdateAnimation(double delta)
-    {
-        switch (CurrentEntityState)
-		{
-			case EntityState.Running:
-			EntityAnimation.Play("run");
-			break;
-			case EntityState.Idling:
-			EntityAnimation.Play("idle");
-			break;
-			case EntityState.Attacking:
-			EntityAnimation.Play("attack");
-			break;
-		}
-    }
-
-
-	public override bool CheckIfAnimationLocked()
-	{
-		return false;
-	}
-
 	public override void FreeEntity()
 	{
 		Target.EntityAttacked -= OnBeingAttacked;
+		Death -= FreeEntity;
+		GlobalManagers.Instance.GetManager<WorldManager>().MaxMobCountAchieved -= ShouldDespawn;
 		EntityGlobalValues.FreeEntityTargetedByPlayer();
+		EntityGlobalValues.CurrentMobCount--;
+		RemoveFromGroup("mobs");
 		QueueFree();
 	}
 }

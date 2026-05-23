@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://b413p4yns0ak6"]
+
+[node name="MobAttackTimer" type="Node2D" unique_id=1310459953]
+
+[node name="Timer" type="Timer" parent="." unique_id=162543564]
+wait_time = 0.5
+autostart = true

@@ -10,6 +10,7 @@ public enum EntityState
 	Running,
 	Jumping,
 	FallingDown,
+	BeingHit,
 }
 
 /// <summary>
@@ -25,6 +26,7 @@ public static class EntityGlobalValues
 	/// PlayerTargetedByEntity defines what entity targeted the player.
 	/// </summary>
 	public static Entity PlayerTargetedByEntity { get; set; } = null;
+	public static int CurrentMobCount { get; set; } = 0;
 	public static void FreeEntityTargetedByPlayer() => EntityTargetedByPlayer = null;
 	public static void FreePlayerTargetedByEntity() => PlayerTargetedByEntity = null;
 }
@@ -47,12 +49,12 @@ public abstract partial class Entity : CharacterBody2D
 	[Signal] public delegate void BlockDestroyedEventHandler(int x, int y);
 	[Signal] public delegate void BlockPlacedEventHandler(int x, int y);
 	[Signal] public delegate void EntityAttackedEventHandler(float damageAmount, Entity target);
+	[Signal] public delegate void DeathEventHandler();
 	protected AnimatedSprite2D EntityAnimation { get; set; }
 	protected EntityState _currentEntityState = EntityState.Idling;
 	protected virtual EntityState CurrentEntityState 
 	{ 
 		get => _currentEntityState; 
-		// TODO: Work out all the animation cases
 		set => _currentEntityState = CheckIfAnimationLocked() ? _currentEntityState : value; 
 	}
 	/// <summary>
@@ -75,6 +77,7 @@ public abstract partial class Entity : CharacterBody2D
 	/// CurrentSpeed defines the speed for entity after applying buffs/nerfs (e.g.: from different items).
 	/// </summary>
 	public float CurrentSpeed { get; protected set; }
+	public float MaxSpeed { get; protected set; }
 	/// <summary>
 	/// _baseDamage defines the base damage for entity. Other stats such as buffs/nerfs should evalute from this value.
 	/// </summary>
@@ -83,6 +86,7 @@ public abstract partial class Entity : CharacterBody2D
 	/// CurrentDamage defines the damage for entity after applying buffs/nerfs (e.g.: from different items).
 	/// </summary>	
 	public float CurrentDamage { get; protected set; }
+	public float MaxDamage { get; protected set; }
 	/// <summary>
 	/// _baseJumpForce defines the base jump force for entity. Other stats such as buffs/nerfs should evalute from this value.
 	/// </summary>
@@ -91,14 +95,18 @@ public abstract partial class Entity : CharacterBody2D
 	/// CurrentJumpForce defines the jump force for entity after applying buffs/nerfs (e.g.: from different items).
 	/// </summary>
 	public float CurrentJumpForce { get; set; }
+	public float MaxJumpForce { get; protected set; }
 
     public override void _Ready()
     {
         CurrentHealth = _baseHealth;
 		MaxHealth = _baseHealth;
 		CurrentSpeed = _baseSpeed;
+		MaxSpeed = _baseSpeed;
 		CurrentDamage = _baseDamage;
+		MaxDamage = _baseDamage;
 		CurrentJumpForce = _baseJumpForce;
+		MaxJumpForce = _baseJumpForce;
 		EntityAnimation = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
     }
 	

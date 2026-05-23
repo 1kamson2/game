@@ -3,5 +3,5 @@
 [node name="MobSpawnTimer" type="Node2D" unique_id=1310459953]
 
 [node name="Timer" type="Timer" parent="." unique_id=162543564]
-wait_time = 30.0
+wait_time = 7.0
 autostart = true

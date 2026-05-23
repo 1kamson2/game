@@ -3,3 +3,6 @@
 [ext_resource type="PackedScene" uid="uid://br6api8q6siwl" path="res://GameModes/PlayableScene.tscn" id="1_neqvy"]
 
 [node name="PlayableScene" unique_id=575379532 instance=ExtResource("1_neqvy")]
+
+[node name="CanvasModulate" type="CanvasModulate" parent="." index="2" unique_id=754782862]
+color = Color(0.13333334, 0.1254902, 0.20392157, 1)
