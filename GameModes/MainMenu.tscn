@@ -1,0 +1,153 @@
+[gd_scene format=3 uid="uid://bu7j8wci4eyj4"]
+
+[ext_resource type="Script" uid="uid://c6ehwwxh23ar6" path="res://GameModes/MainMenu.cs" id="1_5vwcx"]
+[ext_resource type="Texture2D" uid="uid://c6u0lpbfnwlm3" path="res://Resources/icon.svg" id="1_piwk2"]
+[ext_resource type="Texture2D" uid="uid://ddrs5ucebhxw8" path="res://Resources/Parallax/forest_sky.png" id="1_wgs5v"]
+[ext_resource type="Texture2D" uid="uid://bcbu8dmdppgi8" path="res://Resources/Parallax/forest_mountain.png" id="2_5vwcx"]
+[ext_resource type="Texture2D" uid="uid://bfty338xi6nnw" path="res://Resources/Parallax/forest_back.png" id="3_cvs53"]
+[ext_resource type="Texture2D" uid="uid://oh7n6nu6nu8e" path="res://Resources/Parallax/forest_long.png" id="4_wwjfv"]
+[ext_resource type="Texture2D" uid="uid://dqvyiqddalsnn" path="res://Resources/Parallax/forest_mid.png" id="5_dsdhi"]
+[ext_resource type="Texture2D" uid="uid://cq2djaivpy7s5" path="res://Resources/Parallax/forest_moon.png" id="6_t644r"]
+[ext_resource type="Texture2D" uid="uid://cff3vs0tq8g41" path="res://Resources/Parallax/forest_short.png" id="7_al7qt"]
+
+[node name="Menu" type="Control" unique_id=1532553562]
+clip_contents = true
+layout_mode = 3
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_5vwcx")
+
+[node name="Parallax" type="Node2D" parent="." unique_id=1896253470]
+z_index = -999
+position = Vector2(855, 540)
+scale = Vector2(0.9, 0.9)
+
+[node name="Sky" type="Parallax2D" parent="Parallax" unique_id=1239645040]
+scroll_scale = Vector2(0.05, 0.05)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Sky" unique_id=319778289]
+texture = ExtResource("1_wgs5v")
+
+[node name="Mountain" type="Parallax2D" parent="Parallax" unique_id=1707012603]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.15, 0.15)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Mountain" unique_id=1813400361]
+texture = ExtResource("2_5vwcx")
+
+[node name="ForestBack" type="Parallax2D" parent="Parallax" unique_id=740215297]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.3, 0.3)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestBack" unique_id=1714881817]
+texture = ExtResource("3_cvs53")
+
+[node name="ForestLong" type="Parallax2D" parent="Parallax" unique_id=737002425]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.45, 0.45)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestLong" unique_id=1507435870]
+texture = ExtResource("4_wwjfv")
+
+[node name="ForestMid" type="Parallax2D" parent="Parallax" unique_id=1616646981]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.55, 0.55)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestMid" unique_id=724980200]
+texture = ExtResource("5_dsdhi")
+
+[node name="Moon" type="Parallax2D" parent="Parallax" unique_id=1643616169]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.65, 0.65)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Moon" unique_id=1810102821]
+texture = ExtResource("6_t644r")
+
+[node name="ForestShort" type="Parallax2D" parent="Parallax" unique_id=710742182]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.8, 0.8)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestShort" unique_id=239193532]
+texture = ExtResource("7_al7qt")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=100596171]
+modulate = Color(1, 1, 1, 0.7921569)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 768.0
+offset_bottom = 417.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.13319641, 0.13319641, 0.13319638, 1)
+
+[node name="MainMenu" type="MarginContainer" parent="." unique_id=1142083019]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Panes" type="HBoxContainer" parent="MainMenu" unique_id=1880307932]
+clip_contents = true
+layout_mode = 2
+alignment = 1
+
+[node name="MenuOptions" type="VBoxContainer" parent="MainMenu/Panes" unique_id=789420120]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 30
+
+[node name="Start" type="Button" parent="MainMenu/Panes/MenuOptions" unique_id=655589371]
+clip_contents = true
+custom_minimum_size = Vector2(300, 150)
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_constants/h_separation = 8
+theme_override_icons/icon = ExtResource("1_piwk2")
+text = "Start"
+
+[node name="Exit" type="Button" parent="MainMenu/Panes/MenuOptions" unique_id=1584342918]
+clip_contents = true
+custom_minimum_size = Vector2(300, 150)
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_constants/h_separation = 8
+theme_override_icons/icon = ExtResource("1_piwk2")
+text = "Exit"
+
+[node name="CenterContainer" type="CenterContainer" parent="MainMenu/Panes" unique_id=914415541]
+layout_mode = 2
+
+[node name="GameTitle" type="Label" parent="MainMenu/Panes/CenterContainer" unique_id=58887196]
+layout_mode = 2
+theme_override_font_sizes/font_size = 100
+text = "Mineraria"

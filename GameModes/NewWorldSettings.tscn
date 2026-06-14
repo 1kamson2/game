@@ -1,0 +1,139 @@
+[gd_scene format=3 uid="uid://d3mphtetxhmsl"]
+
+[ext_resource type="Script" uid="uid://dy6r6mi316t4n" path="res://GameModes/NewWorldSettings.cs" id="1_c1w5e"]
+[ext_resource type="Texture2D" uid="uid://ddrs5ucebhxw8" path="res://Resources/Parallax/forest_sky.png" id="2_hhiv3"]
+[ext_resource type="Texture2D" uid="uid://bcbu8dmdppgi8" path="res://Resources/Parallax/forest_mountain.png" id="3_xcjin"]
+[ext_resource type="Texture2D" uid="uid://bfty338xi6nnw" path="res://Resources/Parallax/forest_back.png" id="4_6r7ay"]
+[ext_resource type="Texture2D" uid="uid://oh7n6nu6nu8e" path="res://Resources/Parallax/forest_long.png" id="5_2oy3x"]
+[ext_resource type="Texture2D" uid="uid://dqvyiqddalsnn" path="res://Resources/Parallax/forest_mid.png" id="6_p38ff"]
+[ext_resource type="Texture2D" uid="uid://cq2djaivpy7s5" path="res://Resources/Parallax/forest_moon.png" id="7_lb0vn"]
+[ext_resource type="Texture2D" uid="uid://cff3vs0tq8g41" path="res://Resources/Parallax/forest_short.png" id="8_dbjos"]
+
+[node name="NewWorldSettings" type="Control" unique_id=1532553562]
+clip_contents = true
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = 15.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+script = ExtResource("1_c1w5e")
+
+[node name="Parallax" type="Node2D" parent="." unique_id=1896253470]
+z_index = -999
+position = Vector2(855, 540)
+scale = Vector2(0.9, 0.9)
+
+[node name="Sky" type="Parallax2D" parent="Parallax" unique_id=1239645040]
+scroll_scale = Vector2(0.05, 0.05)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Sky" unique_id=319778289]
+texture = ExtResource("2_hhiv3")
+
+[node name="Mountain" type="Parallax2D" parent="Parallax" unique_id=1707012603]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.15, 0.15)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Mountain" unique_id=1813400361]
+texture = ExtResource("3_xcjin")
+
+[node name="ForestBack" type="Parallax2D" parent="Parallax" unique_id=740215297]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.3, 0.3)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestBack" unique_id=1714881817]
+texture = ExtResource("4_6r7ay")
+
+[node name="ForestLong" type="Parallax2D" parent="Parallax" unique_id=737002425]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.45, 0.45)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestLong" unique_id=1507435870]
+texture = ExtResource("5_2oy3x")
+
+[node name="ForestMid" type="Parallax2D" parent="Parallax" unique_id=1616646981]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.55, 0.55)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestMid" unique_id=724980200]
+texture = ExtResource("6_p38ff")
+
+[node name="Moon" type="Parallax2D" parent="Parallax" unique_id=1643616169]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.65, 0.65)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/Moon" unique_id=1810102821]
+texture = ExtResource("7_lb0vn")
+
+[node name="ForestShort" type="Parallax2D" parent="Parallax" unique_id=710742182]
+scale = Vector2(0.5, 0.5)
+scroll_scale = Vector2(0.8, 0.8)
+repeat_size = Vector2(1700, 0)
+repeat_times = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="Parallax/ForestShort" unique_id=239193532]
+texture = ExtResource("8_dbjos")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=100596171]
+modulate = Color(1, 1, 1, 0.7921569)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 768.0
+offset_bottom = 417.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.13319641, 0.13319641, 0.13319638, 1)
+
+[node name="SeedSettings" type="MarginContainer" parent="." unique_id=1142083019]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="Center" type="CenterContainer" parent="SeedSettings" unique_id=914415541]
+clip_contents = true
+layout_mode = 2
+
+[node name="SeedContainer" type="VBoxContainer" parent="SeedSettings/Center" unique_id=789420120]
+clip_contents = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+size_flags_horizontal = 2
+size_flags_vertical = 4
+theme_override_constants/separation = 30
+
+[node name="Prompt" type="Label" parent="SeedSettings/Center/SeedContainer" unique_id=1595657064]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+text = "Seed:"
+
+[node name="Value" type="LineEdit" parent="SeedSettings/Center/SeedContainer" unique_id=67716028]
+layout_mode = 2
+mouse_filter = 1
+theme_override_font_sizes/font_size = 20
+placeholder_text = "Type seed here..."
+max_length = 24
