@@ -161,7 +161,12 @@ animations = [{
 
 [node name="Entity" unique_id=1815607445 instance=ExtResource("1_7ycgj")]
 script = ExtResource("2_exm32")
-SpawnChance = 0.01
+MaxDistanceToPlayer = 500.0
+SpawnChance = 0.02
+_baseHealth = 2500.0
+_baseSpeed = 200.0
+_baseDamage = 70.0
+_baseJumpForce = 325.0
 
 [node name="AnimatedSprite2D" parent="." index="1" unique_id=1297269675]
 scale = Vector2(1.5, 1.5)

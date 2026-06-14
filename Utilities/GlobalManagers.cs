@@ -8,7 +8,7 @@ public partial class GlobalManagers : Node2D
 	public readonly TilesetManager TilesetManagerSingleton = GD.Load<PackedScene>("res://Utilities/TilesetManager/TilesetManager.tscn").Instantiate<TilesetManager>();
 	public readonly WorldManager WorldManagerSingleton = GD.Load<PackedScene>("res://Utilities/WorldManager/WorldManager.tscn").Instantiate<WorldManager>();
 	public readonly ItemManager ItemManagerSingleton = GD.Load<PackedScene>("res://Utilities/ItemManager/ItemManager.tscn").Instantiate<ItemManager>();
-
+	private PackedScene _endScene = GD.Load<PackedScene>("res://GameModes/End.tscn");
     public override void _Ready()
     {
         base._Ready();
@@ -17,12 +17,14 @@ public partial class GlobalManagers : Node2D
 		AddChild(BlockManagerSingleton);
 		AddChild(WorldManagerSingleton);
 		AddChild(ItemManagerSingleton);
-		PostReadyInitialization();
     }
 
-	private void PostReadyInitialization()
+	public void OnPlayerDeath()
 	{
-		throw new NotImplementedException();
+		if (GlobalWorldStateValues.IsInHardmode)
+		{
+			GetTree().ChangeSceneToPacked(_endScene);
+		}
 	}
 
 	public T GetManager<T>() where T : class

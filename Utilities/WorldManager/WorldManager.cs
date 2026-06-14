@@ -5,16 +5,22 @@ using Godot;
 
 public static class GlobalWorldStateValues
 {
-	private static bool IsInHardmode
+	public static bool IsInHardmode
 	{
 		get => _wasBossSlain;
 	}
-	public static bool _wasBossSlain = false;
-	private static float _maxModifierValue = 2.0f;
-	private static float _modifierIncrement = 0.02f;
+	private static bool _wasBossSlain = false;
+	private static float _maxModifierValue = 4.0f;
+	private static float _modifierIncrement = 0.05f;
 	private static float _mobHealthModifier = 1.0f;
 	private static float _mobDamageModifier = 1.0f;
 	private static float _mobSpeedModifier = 1.0f;
+
+	public static void OnBossSlain()
+	{
+		_wasBossSlain = true;
+		GD.Print("Boss was slain.");
+	}
 	// Mob<Field>Modifier is used to make game harder. It applies to the next spawned instance of mobs.
 	public static float MaxModifierValue
 	{
@@ -102,6 +108,10 @@ public partial class WorldManager : ResourceManager<Biome>
 
 		_mobAttackTimer.Timeout += mobSpawned.OnAttack;
 		MaxMobCountAchieved += mobSpawned.ShouldDespawn;
+		if (mobSpawned is MobBoss)
+		{
+			mobSpawned.Death += GlobalWorldStateValues.OnBossSlain;
+		}
 	}
 	public void ScheduleEventGeneration() { }
 	public void ScheduleLootGeneration()
@@ -202,6 +212,7 @@ public partial class WorldManager : ResourceManager<Biome>
 		_player = GD.Load<PackedScene>("res://Entities/Player/Player.tscn").Instantiate<Player>();
 		_player.BlockDestroyed += OnBlockDestroyed;
 		_player.BlockPlaced += OnBlockPlaced;
+		_player.Death += GlobalManagers.Instance.OnPlayerDeath;
 		AddChild(_player);
 
 		_mobSpawnTimer = GetNode<Timer>("../MobSpawnTimer/Timer");

@@ -15,7 +15,5 @@ public partial class MobBoss : Mob
     public override void FreeEntity()
     {
         base.FreeEntity();
-		GlobalWorldStateValues._wasBossSlain = true;
     }
-
 }

@@ -166,7 +166,12 @@ animations = [{
 
 [node name="Entity" unique_id=1815607445 instance=ExtResource("1_vu8rf")]
 script = ExtResource("2_xg0sr")
+MaxDistanceToPlayer = 800.0
 SpawnChance = 0.4
+_baseHealth = 75.0
+_baseSpeed = 200.0
+_baseDamage = 7.5
+_baseJumpForce = 350.0
 
 [node name="AnimatedSprite2D" parent="." index="1" unique_id=1297269675 groups=["mobs"]]
 position = Vector2(-2, -12)

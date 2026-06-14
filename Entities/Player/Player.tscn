@@ -314,8 +314,8 @@ disable_mode = 1
 safe_margin = 1.0
 script = ExtResource("1_oo13o")
 _baseSpeed = 150.0
-_baseDamage = 25.0
-_baseJumpForce = 290.0
+_baseDamage = 20.0
+_baseJumpForce = 300.0
 metadata/_edit_group_ = true
 
 [node name="PointLight2D" type="PointLight2D" parent="." index="0" unique_id=701270851]
