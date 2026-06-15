@@ -1,0 +1,33 @@
+[gd_resource type="Resource" script_class="UsableItem" format=3 uid="uid://boswtprws5nlp"]
+
+[ext_resource type="Script" uid="uid://dj8t1mvo1mp12" path="res://Utilities/ItemManager/CraftingInformation.cs" id="1_ivom3"]
+[ext_resource type="Script" uid="uid://b0wxhg1mslhgi" path="res://Utilities/ItemManager/Stat.cs" id="2_70b5s"]
+[ext_resource type="Script" uid="uid://bv5ve33t5sgo2" path="res://Utilities/ItemManager/UsableItem.cs" id="3_ukqw3"]
+
+[sub_resource type="Resource" id="Resource_t8f6y"]
+script = ExtResource("1_ivom3")
+Id = "block_redstone"
+Amount = 32
+metadata/_custom_type_script = "uid://dj8t1mvo1mp12"
+
+[sub_resource type="Resource" id="Resource_kjdm4"]
+script = ExtResource("1_ivom3")
+Id = "block_emerald"
+Amount = 6
+metadata/_custom_type_script = "uid://dj8t1mvo1mp12"
+
+[sub_resource type="Resource" id="Resource_5myj1"]
+script = ExtResource("2_70b5s")
+Id = "speed"
+Value = 0.25
+metadata/_custom_type_script = "uid://b0wxhg1mslhgi"
+
+[resource]
+script = ExtResource("3_ukqw3")
+MaxStackSize = 16
+Name = "Speed Pendant"
+IsStackable = true
+TilesetCoordinates = Vector2i(28, 24)
+RequiredItems = Array[Object]([SubResource("Resource_t8f6y"), SubResource("Resource_kjdm4")])
+Stats = Array[Object]([SubResource("Resource_5myj1")])
+Id = "item_pendant_speed"

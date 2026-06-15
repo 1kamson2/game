@@ -10,6 +10,6 @@ Name = "Dirt Cave Wall"
 IsBreakable = false
 IsReplaceable = true
 NoiseBoundaries = Vector2(-1, 0)
-HeightBoundaries = Vector2(50, 255)
+HeightBoundaries = Vector2(50, 254)
 TilesetCoordinates = Vector2i(0, 31)
 metadata/_custom_type_script = "uid://cxliretlc4b7o"

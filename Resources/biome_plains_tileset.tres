@@ -855,6 +855,11 @@ texture = ExtResource("2_dpbrg")
 29:23/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 29:24/0 = 0
 29:24/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+23:23/0 = 0
+24:23/0 = 0
+25:23/0 = 0
+26:23/0 = 0
+26:24/0 = 0
 
 [resource]
 occlusion_layer_0/light_mask = 1
