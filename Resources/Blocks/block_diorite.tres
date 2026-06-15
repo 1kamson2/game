@@ -9,5 +9,5 @@ MaxStackSize = 64
 IsStackable = true
 Name = "Diorite"
 NoiseBoundaries = Vector2(0.81, 1)
-HeightBoundaries = Vector2(50, 255)
+HeightBoundaries = Vector2(50, 250)
 TilesetCoordinates = Vector2i(0, 7)

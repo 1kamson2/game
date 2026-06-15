@@ -73,10 +73,12 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 				MaxHealth += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseHealth, item, "health");
 				MaxDamage += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseDamage, item, "damage");
 				MaxSpeed += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseSpeed, item, "speed");
-				CurrentHealth += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseHealth, item, "health_regen");
+				CurrentHealth += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(MaxHealth, item, "health_regen");
+				MaxJumpForce += (float)GlobalManagers.Instance.GetManager<ItemManager>().ApplyModifiersToField(_baseJumpForce, item, "jump_force");
 				CurrentHealth = Mathf.Min(CurrentHealth, MaxHealth);
 				CurrentDamage = Mathf.Max(CurrentDamage, MaxDamage);
 				CurrentSpeed = Mathf.Max(CurrentSpeed, MaxSpeed);
+				CurrentJumpForce = Mathf.Max(CurrentJumpForce, MaxJumpForce);
 				EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, MaxSpeed, CurrentDamage, MaxDamage);
 				break;
 			case Block _:

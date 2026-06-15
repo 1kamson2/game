@@ -78,7 +78,7 @@ public partial class WorldManager : ResourceManager<Biome>
 	[Export] public FastNoiseLite.NoiseTypeEnum NoiseFunctionNoiseType { get; set; } = FastNoiseLite.NoiseTypeEnum.Perlin;
 	// Define noise function, used for chunk generation
 	[Export] public FastNoiseLite NoiseFunction { get; set; } = new FastNoiseLite();
-	[Export] private int _maxMobCount = 25;
+	private int _maxMobCount = 25;
 	[Signal] public delegate void MaxMobCountAchievedEventHandler();
 	public Godot.Vector2 ViewportSize { get; set; }
 	public ChunkArea CurrentArea { get; set; }

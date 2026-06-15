@@ -1,0 +1,34 @@
+[gd_resource type="Resource" script_class="UsableItem" format=3 uid="uid://b811lwlo0wghg"]
+
+[ext_resource type="Script" uid="uid://dj8t1mvo1mp12" path="res://Utilities/ItemManager/CraftingInformation.cs" id="1_877q3"]
+[ext_resource type="Script" uid="uid://b0wxhg1mslhgi" path="res://Utilities/ItemManager/Stat.cs" id="2_3gyrp"]
+[ext_resource type="Script" uid="uid://bv5ve33t5sgo2" path="res://Utilities/ItemManager/UsableItem.cs" id="3_fbxb1"]
+
+[sub_resource type="Resource" id="Resource_t8f6y"]
+script = ExtResource("1_877q3")
+Id = "block_iron"
+Amount = 32
+metadata/_custom_type_script = "uid://dj8t1mvo1mp12"
+
+[sub_resource type="Resource" id="Resource_yrm8v"]
+script = ExtResource("2_3gyrp")
+Id = "damage"
+Value = 20.0
+ModifierType = 1
+metadata/_custom_type_script = "uid://b0wxhg1mslhgi"
+
+[sub_resource type="Resource" id="Resource_t4jlv"]
+script = ExtResource("2_3gyrp")
+Id = "speed"
+Value = -0.1
+metadata/_custom_type_script = "uid://b0wxhg1mslhgi"
+
+[resource]
+script = ExtResource("3_fbxb1")
+MaxStackSize = 1
+Name = "Iron Chestplate"
+IsStackable = true
+TilesetCoordinates = Vector2i(26, 23)
+RequiredItems = Array[Object]([SubResource("Resource_t8f6y")])
+Stats = Array[Object]([SubResource("Resource_yrm8v"), SubResource("Resource_t4jlv")])
+Id = "item_armor_iron_chestplate"

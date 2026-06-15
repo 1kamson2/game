@@ -9,5 +9,5 @@ MaxStackSize = 64
 IsStackable = true
 Name = "Oak Leaves"
 NoiseBoundaries = Vector2(-0.2, 0.2)
-HeightBoundaries = Vector2(-255, 255)
+HeightBoundaries = Vector2(-255, 250)
 TilesetCoordinates = Vector2i(0, 15)
