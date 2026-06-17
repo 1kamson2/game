@@ -104,6 +104,10 @@ public partial class Mob : Entity, IMobController
 			return;
 		}
 		CurrentHealth -= damageAmount;
+		CurrentEntityState = EntityState.BeingHit;
+		EntityAnimation.Modulate = HitModulate;
+		Tween tween = CreateTween();
+		tween.TweenProperty(EntityAnimation, "modulate", Colors.White, 0.1f);
 		if (CurrentHealth <= 0)
 		{
 			EmitSignal(SignalName.Death);
@@ -159,8 +163,8 @@ public partial class Mob : Entity, IMobController
 
 	public override bool CheckIfAnimationLocked()
 	{
-		return EntityAnimation.IsPlaying() && (
-		EntityAnimation.Animation == "attack");
+		return (EntityAnimation.IsPlaying() && (
+		EntityAnimation.Animation == "attack"));
 	}
 
 	public void ShouldDespawn()

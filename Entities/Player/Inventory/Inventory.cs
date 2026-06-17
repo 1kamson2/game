@@ -27,6 +27,8 @@ public partial class Inventory : HBoxContainer
     private List<Panel> _recipeSlots = new List<Panel>(_baseRecipeCapacity);
     private List<TextureRect> _recipeIcons = new List<TextureRect>(_baseRecipeCapacity);
     private List<Label> _recipeLabels = new List<Label>(_baseRecipeCapacity);
+    private static Color _selectedItemModulate = new(1.7f, 1.7f, 1.7f, 1.0f);
+    private static Color _notSelectedItemModulate = new(0.9f, 0.9f, 0.9f, 1.0f);
 
     public override void _Ready()
     {
@@ -167,7 +169,14 @@ public partial class Inventory : HBoxContainer
                 _inventoryIcons[i].Texture = null;
                 _inventoryLabels[i].Text = "";
             }
-            _inventorySlots[i].SelfModulate = (i == _selectedInventorySlot) ? new Color(1, 1, 0) : new Color(1, 1, 1);
+            if (i == _selectedInventorySlot)
+            {
+                _inventorySlots[i].Modulate = _selectedItemModulate;
+            }
+            else
+            {
+                _inventorySlots[i].Modulate = _notSelectedItemModulate;
+            }
         }
     }
 
@@ -186,6 +195,7 @@ public partial class Inventory : HBoxContainer
                     else
                     {
                         _selectedInventorySlot = index;
+                        EmitSignal(SignalName.InventoryChanged);
                     }
                     break;
             }
