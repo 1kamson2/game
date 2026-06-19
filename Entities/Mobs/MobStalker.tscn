@@ -173,6 +173,9 @@ _baseSpeed = 200.0
 _baseDamage = 7.5
 _baseJumpForce = 350.0
 
+[node name="CollisionShape2D" parent="." index="0" unique_id=355218168]
+one_way_collision_margin = 1.0
+
 [node name="AnimatedSprite2D" parent="." index="1" unique_id=1297269675 groups=["mobs"]]
 position = Vector2(-2, -12)
 scale = Vector2(1.5, 1.5)

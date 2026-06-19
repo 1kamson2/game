@@ -311,7 +311,6 @@ animations = [{
 visibility_layer = 1023
 z_index = 999
 disable_mode = 1
-safe_margin = 1.0
 script = ExtResource("1_oo13o")
 _baseSpeed = 150.0
 _baseDamage = 20.0

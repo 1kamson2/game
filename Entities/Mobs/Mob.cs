@@ -20,6 +20,9 @@ public partial class Mob : Entity, IMobController
 	public Vector2 WanderingCoordinates { get; set; }
 	[Export] public float MaxDistanceToPlayer { get; set; }
 	[Export] public float SpawnChance { get; set; }
+	protected Vector2 _lastPosition;
+	protected float _stuckTimer = 0.0f;
+	protected const float _stuckThreshold = 1.0f;
 
 	public override void _Ready()
 	{
@@ -135,6 +138,25 @@ public partial class Mob : Entity, IMobController
 			WanderingCoordinates = AchievedWanderingCoordinates() ? NewWanderingCoordinates() : WanderingCoordinates;
 			Velocity = PhysicsProcessNoAggroed(delta);
 		}
+
+		// Handling stuck mob
+		if (Velocity.Abs().X <= 1.0f)
+		{
+			if (GlobalPosition.DistanceTo(_lastPosition) <= 16.0f)
+			{
+				_stuckTimer += (float)delta;
+				if (_stuckTimer > _stuckThreshold)
+				{
+					Velocity = new(GlobalPosition.DirectionTo(Target.GlobalPosition).Sign().X * CurrentSpeed, -1.2f * CurrentJumpForce);
+					_stuckTimer = 0f;
+				}
+			}
+			else
+			{
+				_stuckTimer = 0f;
+			}
+		}
+		_lastPosition = GlobalPosition;
 		MoveAndSlide();
 	}
 
