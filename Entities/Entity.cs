@@ -51,6 +51,7 @@ public abstract partial class Entity : CharacterBody2D
 	[Signal] public delegate void EntityAttackedEventHandler(float damageAmount, Entity target);
 	[Signal] public delegate void DeathEventHandler();
 	protected AnimatedSprite2D EntityAnimation { get; set; }
+	protected static Color HitModulate = new(10.0f, 1.0f, 1.0f, 1.0f);
 	protected EntityState _currentEntityState = EntityState.Idling;
 	protected virtual EntityState CurrentEntityState 
 	{ 

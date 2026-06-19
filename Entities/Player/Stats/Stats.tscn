@@ -2,6 +2,27 @@
 
 [ext_resource type="Script" uid="uid://ipm7ag05lkko" path="res://Entities/Player/Stats/Stats.cs" id="1_0aiwj"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_v1vlq"]
+bg_color = Color(0, 0.59607846, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0aiwj"]
+bg_color = Color(0.9246135, 0.82665706, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_heybv"]
+bg_color = Color(1, 0, 0, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
 [node name="Stats" type="PanelContainer" unique_id=134659023]
 offset_right = 96.0
 offset_bottom = 77.0
@@ -15,54 +36,68 @@ layout_mode = 2
 
 [node name="Health" type="HBoxContainer" parent="MC/Container" unique_id=1825152048]
 layout_mode = 2
-alignment = 1
 
 [node name="Label" type="Label" parent="MC/Container/Health" unique_id=1301616404]
 layout_mode = 2
-text = "HP: "
+text = "HP:  "
 
-[node name="Value" type="Label" parent="MC/Container/Health" unique_id=1146720008]
+[node name="Bar" type="ProgressBar" parent="MC/Container/Health" unique_id=1233043988]
+custom_minimum_size = Vector2(120, 24)
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 1
+tooltip_text = "Health"
+theme_override_styles/fill = SubResource("StyleBoxFlat_v1vlq")
+show_percentage = false
 
-[node name="Separator" type="Label" parent="MC/Container/Health" unique_id=685472925]
-layout_mode = 2
-text = "/"
-
-[node name="MaxValue" type="Label" parent="MC/Container/Health" unique_id=1054947685]
-layout_mode = 2
+[node name="Text" type="Label" parent="MC/Container/Health/Bar" unique_id=1054947685]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Speed" type="HBoxContainer" parent="MC/Container" unique_id=438640499]
 layout_mode = 2
-alignment = 1
 
 [node name="Label" type="Label" parent="MC/Container/Speed" unique_id=1477333329]
 layout_mode = 2
+theme_override_font_sizes/font_size = 16
 text = "SPD:"
 
-[node name="Value" type="Label" parent="MC/Container/Speed" unique_id=650570435]
+[node name="Bar" type="ProgressBar" parent="MC/Container/Speed" unique_id=23466725]
+custom_minimum_size = Vector2(120, 24)
 layout_mode = 2
+size_flags_vertical = 3
+theme_override_styles/fill = SubResource("StyleBoxFlat_0aiwj")
+show_percentage = false
 
-[node name="Separator" type="Label" parent="MC/Container/Speed" unique_id=36038725]
-layout_mode = 2
-text = "/"
-
-[node name="MaxValue" type="Label" parent="MC/Container/Speed" unique_id=1683134151]
-layout_mode = 2
+[node name="Text" type="Label" parent="MC/Container/Speed/Bar" unique_id=1368658882]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="Damage" type="HBoxContainer" parent="MC/Container" unique_id=2063029856]
 layout_mode = 2
-alignment = 1
 
 [node name="Label" type="Label" parent="MC/Container/Damage" unique_id=666128698]
 layout_mode = 2
 text = "DMG:"
 
-[node name="Value" type="Label" parent="MC/Container/Damage" unique_id=1874110296]
+[node name="Bar" type="ProgressBar" parent="MC/Container/Damage" unique_id=1646871413]
+custom_minimum_size = Vector2(112, 24)
 layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_heybv")
+show_percentage = false
 
-[node name="Separator" type="Label" parent="MC/Container/Damage" unique_id=1299446634]
-layout_mode = 2
-text = "/"
-
-[node name="MaxValue" type="Label" parent="MC/Container/Damage" unique_id=1491390670]
-layout_mode = 2
+[node name="Text" type="Label" parent="MC/Container/Damage/Bar" unique_id=1268272195]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

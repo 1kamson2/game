@@ -283,12 +283,12 @@ public partial class PlainsBiome : Biome
 		GenerateUnderground(area, noiseFunction, "block_stone", canReplaceBlock: true);
 		GenerateUnderground(area, noiseFunction, "block_diorite", canReplaceBlock: true);
 		GenerateUnderground(area, noiseFunction, "block_dirt_wall", useDepthFactor: true, canReplaceBlock: true);
-		GenerateUnderground(area, noiseFunction, "block_bedrock", canReplaceBlock: true);
 		GenerateOres(area, noiseFunction, "block_coal");
 		GenerateOres(area, noiseFunction, "block_iron");
 		GenerateOres(area, noiseFunction, "block_diamond");
 		GenerateOres(area, noiseFunction, "block_redstone");
 		GenerateOres(area, noiseFunction, "block_emerald");
+		GenerateUnderground(area, noiseFunction, "block_bedrock", canReplaceBlock: true);
 	}
 
 	public override void TryDestroyBlock(Vector2I mouseCoordinates, ref Inventory playersInventory)

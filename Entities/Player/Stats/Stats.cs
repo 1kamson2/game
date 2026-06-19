@@ -16,12 +16,20 @@ public partial class Stats : PanelContainer
 
 	public void OnStatsChanged(float currentHealth, float maxHealth, float currentSpeed, float maxSpeed, float currentDamage, float maxDamage)
 	{
-		Health.GetNode<Label>("Value").Text = currentHealth.ToString("0");
-		Health.GetNode<Label>("MaxValue").Text = maxHealth.ToString("0");
-		Speed.GetNode<Label>("Value").Text = currentSpeed.ToString("0");
-		Speed.GetNode<Label>("MaxValue").Text = maxSpeed.ToString("0");
-		Damage.GetNode<Label>("Value").Text = currentDamage.ToString("0");
-		Damage.GetNode<Label>("MaxValue").Text = maxDamage.ToString("0");
+		Health.GetNode<ProgressBar>("Bar").Value = currentHealth;
+		Health.GetNode<ProgressBar>("Bar").MaxValue = maxHealth;
+		Health.GetNode<Label>("Bar/Text").Text = $"{currentHealth:0} / {maxHealth:0}";
+		CreateTween().TweenProperty(Health.GetNode<ProgressBar>("Bar"), "value", currentHealth, 0.2f);
+
+		Speed.GetNode<ProgressBar>("Bar").Value = currentSpeed;
+		Speed.GetNode<ProgressBar>("Bar").MaxValue = maxSpeed;
+		Speed.GetNode<Label>("Bar/Text").Text = $"{currentSpeed:0} / {maxSpeed:0}";
+		CreateTween().TweenProperty(Speed.GetNode<ProgressBar>("Bar"), "value", currentSpeed, 0.2f);
+
+		Damage.GetNode<ProgressBar>("Bar").Value = currentDamage;
+		Damage.GetNode<ProgressBar>("Bar").MaxValue = maxDamage;
+		Damage.GetNode<Label>("Bar/Text").Text = $"{currentDamage:0} / {maxDamage:0}";
+		CreateTween().TweenProperty(Damage.GetNode<ProgressBar>("Bar"), "value", currentDamage, 0.2f);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

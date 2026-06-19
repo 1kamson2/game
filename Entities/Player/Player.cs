@@ -35,6 +35,10 @@ public partial class Player : Entity, IEntityCanAttack, IEntityIsAttackable
 	{
 		CurrentHealth -= damageAmount;
 		GD.Print($"Attacked by {target}");
+		CurrentEntityState = EntityState.BeingHit;
+		EntityAnimation.Modulate = HitModulate;
+		Tween tween = CreateTween();
+		tween.TweenProperty(EntityAnimation, "modulate", Colors.White, 0.1f);
 		EmitSignal(SignalName.StatsChanged, CurrentHealth, MaxHealth, CurrentSpeed, MaxSpeed, CurrentDamage, MaxDamage);
 		if (CurrentHealth <= 0)
 		{
