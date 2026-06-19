@@ -10,5 +10,5 @@ IsStackable = true
 Name = "Dirt"
 IsReplaceable = true
 NoiseBoundaries = Vector2(-1, 1)
-HeightBoundaries = Vector2(-100, 250)
+HeightBoundaries = Vector2(-100, 255)
 TilesetCoordinates = Vector2i(0, 6)
