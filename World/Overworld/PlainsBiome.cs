@@ -121,7 +121,8 @@ public partial class PlainsBiome : Biome
 			mobInstance.QueueFree();
 			return null;
 		}
-		int randomXOffset = rndGenerator.Next(-300, 300);
+		int offset = rndGenerator.Next(200, 400);
+		int randomXOffset = rndGenerator.NextDouble() <= 0.5 ? -offset : offset;
 		int randomYOffset = rndGenerator.Next(-25, 25);
 		mobInstance.GlobalPosition = new(playerPosition.X + randomXOffset, playerPosition.Y + randomYOffset);
 		AddChild(mobInstance);

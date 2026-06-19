@@ -144,6 +144,9 @@ _baseSpeed = 125.0
 _baseDamage = 13.5
 _baseJumpForce = 275.0
 
+[node name="CollisionShape2D" parent="." index="0" unique_id=355218168]
+scale = Vector2(1, 1)
+
 [node name="AnimatedSprite2D" parent="." index="1" unique_id=1297269675]
 position = Vector2(-4, 0)
 sprite_frames = SubResource("SpriteFrames_xawov")

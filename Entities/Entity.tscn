@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://hrodjmoax5xs"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0p8jp"]
-size = Vector2(112, 112)
+size = Vector2(34, 44)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_0p8jp"]
 animations = [{
@@ -19,11 +19,11 @@ collision_mask = 15
 input_pickable = true
 platform_floor_layers = 4294967041
 platform_wall_layers = 1
-safe_margin = 7.191
+safe_margin = 2.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=355218168]
-scale = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_0p8jp")
+one_way_collision_margin = 0.0
 debug_color = Color(1, 0, 0, 0.41960785)
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1297269675]
