@@ -19,6 +19,10 @@ config/icon="res://Resources/icon.svg"
 
 project/assembly_name="Mineraria"
 
+[editor]
+
+export/convert_text_resources_to_binary=false
+
 [global_group]
 
 player="Use to tag entities as a player."
